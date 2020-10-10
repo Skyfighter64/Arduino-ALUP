@@ -1,5 +1,10 @@
 #include <FastLED.h>
-//protocol constants
+
+/*
+ *  protocol constants 
+ *
+ */
+
 #define PROTOCOL_VERSION "0.1 (internal)"
 
 #define CONNECTION_REQUEST_BYTE 255
@@ -11,6 +16,60 @@
 #define FRAME_ERROR_BYTE 249
 
 #define SUBCOMMAND_OFFSET 8
+
+/*
+ * Toggole for debug mode
+ * 
+ * Comment to deactivate debug LEDs, uncomment to activate
+ * 
+ * The debug mode is using 5 separate standard (non-addressable) LEDs and 3 buttons 
+ * to help for following the protocol flow of this device and debug the program
+ */
+ 
+//#define debug
+
+/*
+  * Debug LED Signals:
+  * 
+  * Blue 0 (led_0)
+  *   State: flashing every 250ms for 100ms 
+  *   Description: Waiting for connection
+  *   
+  *   State: On
+  *   Description: Connected
+  *   
+  *   
+  * Blue 1 (led_1)
+  *   State: On
+  *   Description: Try to connect
+  *   
+  *   State: flashing 10 times, delay: 10ms, totoal: 0.1s
+  *   Description: Test Subprogram
+  *   
+  *   
+  * Green: (led_2)   
+  *   State: On
+  *   Description: Connected 
+  *   
+  *   State: Off
+  *   Description: Not connected
+  *   
+  *Red 0: (led_3) 
+  *   State: flashing 5 times, delay: 250ms, total: 2.5s
+  *   Description: Faulty Frame Body received (Frame Error)
+  *   
+  *   State: flashing 100 times, delay: 100ms, total: 20s
+  *   Description: Memmory allocation error (Probably out of RAM)
+  *   
+  *   
+  *Red 1: (led_4)   
+  *   State: On for 200ms
+  *   Description: Discarded faulty frame (after Frame Error)
+  *   
+  *   
+  */
+ 
+
 
 //define the pins of the buttons
 #define button_0 2
@@ -25,6 +84,12 @@
 #define led_3 10
 #define led_4 11
 
+
+
+/*
+ * the values for the connected LED Strip
+ * Change them depending on your configuration
+ */
 #define NUM_LEDS 10
 #define DATA_PIN 12
 #define CLOCK_PIN 13
@@ -43,13 +108,31 @@
  */
 #define FRAME_DELAY 3
 
+/*
+ * the baud rate for serial communication
+ * make sure to set the same value to both devices
+ */
 #define BAUD 115200
 
-
+/*
+ * the device name 
+ * set it to anything you like
+ */
 #define DEVICE_NAME "WS2812b@ArduinoNano"
-#define EXTRA_VALUES "Here are some extra values"
+
+/*
+ * extra configuration values
+ * Not required for normal use, unless stated otherwise in the configuration guide
+ */
+#define EXTRA_VALUES ""
 
 
+
+
+
+/*
+ * enumerator with all connection states
+ */
 enum ConnectionState
 {
   Connecting,
@@ -57,10 +140,11 @@ enum ConnectionState
   Disconnected
 };
 
+//the current connection state
+ConnectionState state;
 
 // Define the array of leds
 CRGB leds[NUM_LEDS];
-ConnectionState state;
 
 
 
@@ -76,53 +160,17 @@ ConnectionState state;
 
 
 
- /*
-  * Debug LEDs:
-  * 
-  * Blue 0 
-  *   State: flashing every 250ms for 100ms 
-  *   Description: Waiting for connection
-  *   
-  *   State: On
-  *   Description: Connected
-  *   
-  *   
-  * Blue 1 
-  *   State: On
-  *   Description: Try to connect
-  *   
-  *   State: flashing 10 times, delay: 10ms, totoal: 0.1s
-  *   Description: Test Subprogram
-  *   
-  *   
-  *Green:   
-  *   State: On
-  *   Description: Connected 
-  *   
-  *   State: Off
-  *   Description: Not connected
-  *   
-  *Red 0  
-  *   State: flashing 5 times, delay: 250ms, total: 2.5s
-  *   Description: Faulty Frame Body received (Frame Error)
-  *   
-  *   State: flashing 100 times, delay: 100ms, total: 20s
-  *   Description: Memmory allocation error (Probably out of RAM)
-  *   
-  *   
-  *Red 1   
-  *   State: On for 200ms
-  *   Description: Discarded faulty frame (after Frame Error)
-  *   
-  *   
-  */
+ 
 
 
 
 
 void setup() {
-  // put your setup code here, to run once:
-  //initalize buttons
+
+
+  //setup for debugging
+
+#ifdef debug
   pinMode(button_0, INPUT);
   pinMode(button_1, INPUT);
   pinMode(button_2, INPUT);
@@ -134,6 +182,7 @@ void setup() {
   pinMode(led_2, OUTPUT);
   pinMode(led_3, OUTPUT);
   pinMode(led_4, OUTPUT);
+  pinMode(LED_BUILTIN, OUTPUT);
 
 
   //turn all leds off
@@ -142,6 +191,7 @@ void setup() {
   digitalWrite(led_2, LOW);
   digitalWrite(led_3, LOW);
   digitalWrite(led_4, LOW);
+#endif
 
   SetupLEDs();
   //open the serial connection
@@ -162,9 +212,13 @@ void loop()
   if(result == 0)
   {
     
-    //connected successfully
+    
     //turn on the green led to notify the user that the process is finished
+    #ifdef debug        
     digitalWrite(led_2, HIGH);
+    #endif    
+
+    //connected successfully
     state = Connected;
     
     while(state == Connected)
@@ -178,8 +232,13 @@ void loop()
         //send Frame error back and abort receiving a frame
         SendFrameErrorByte();
 
+        
         //let the red led blink 5 times
+        #ifdef debug
         Blink(led_3, 5, 250);
+        #endif
+
+        
         continue;
       }
       
@@ -197,16 +256,18 @@ void loop()
   else if(result == -1)
   {
     //the connection could not be established
-    
+    #ifdef debug
     digitalWrite(led_3, HIGH);
     delay(1000);
     digitalWrite(led_3, LOW);
+    #endif   
   }
 
   //disconnected from the device 
   //disable the green led
+  #ifdef debug  
   digitalWrite(led_2, LOW);
-
+  #endif
 
 
 
@@ -304,7 +365,7 @@ void ExecuteSubCommand(byte id)
  */
 void ExampleSubProgram()
 {
-  Blink(led_2, 10, 10);
+  Blink(LED_BUILTIN, 10, 10);
 }
 
 
@@ -313,7 +374,15 @@ void ExampleSubProgram()
  */
 void SetupLEDs()
 {
-  // Uncomment/edit one of the following lines for your leds arrangement.
+  /*
+   * The setup for the connected LED strip
+   * Uncomment/edit one of the following lines for your type of LEDs
+   * 
+   * You may also change the frame delay, data and clock pin, and number of LEDs at the top of this file depending on your LEDs
+   * 
+   * If your LEDs show the wrong colors (e.g. Blue instead of Red, etc), change the "RGB" in your uncommented line 
+   * to either RGB, RBG, BRG, BGR, GRB or GBR
+   */
       // FastLED.addLeds<TM1803, DATA_PIN, RGB>(leds, NUM_LEDS);
       // FastLED.addLeds<TM1804, DATA_PIN, RGB>(leds, NUM_LEDS);
       // FastLED.addLeds<TM1809, DATA_PIN, RGB>(leds, NUM_LEDS);
@@ -367,21 +436,27 @@ int Connect()
   {
     //the configuration could not be received/applied successfully by the master device (Timeout of 5s reached)
     //or a configuration error happened on the master device
+    
+    #ifdef debug
     //turn on the first red led to notify the user
     digitalWrite(led_3, HIGH);
     digitalWrite(led_0, LOW);
+    #endif
+    
     return -1;
   }
 
-
   //the configuration was applied successfully by the master device and a configuration acknowledgement was received
+  
+  #ifdef debug
   //turn on the first blue led to notify the user
-   digitalWrite(led_3, LOW);
-   digitalWrite(led_0, HIGH);
-
-   //send a configuration acknowledgement to tell the master device that this device is now ready to receive data
-   SendConfigurationAcknowledgementByte();   
-   return 0;
+  digitalWrite(led_3, LOW);
+  digitalWrite(led_0, HIGH);
+  #endif
+  
+  //send a configuration acknowledgement to tell the master device that this device is now ready to receive data 
+  SendConfigurationAcknowledgementByte();   
+  return 0;
 }
 
 
@@ -430,15 +505,22 @@ void DiscardBytes(long numOfBytes)
     if(buff == NULL)
     {
       //memory could not be allocated; 
+      
+      #ifdef debug
       //notify the user by blinking and return without reading in the data
       Blink(led_3, 100, 100);
+      #endif
+      
       return;
     }
 
     //read the bytes in from the serial buffer
     Serial.readBytes(buff, numOfBytes);
     free(buff);
+
+    #ifdef debug
     Blink(led_4, 1, 200);
+    #endif
   }
 }
 
@@ -551,8 +633,12 @@ void ReceiveBody(long bodySize, long bodyOffset, byte commandByte)
   if(buff == NULL)
   {
     //memory could not be allocated; 
+
+    #ifdef debug
     //notify the user by blinking and return without reading in the data
     Blink(led_3, 100, 100);
+    #endif
+    
     return;
   }
 
@@ -594,11 +680,13 @@ void RequestConnection()
       //connection acknowledgement received
       return;
     }
-    
+
+    #ifdef debug
     //notify the user by letting the first blue led blink
     digitalWrite(led_0, HIGH);
     delay(100);
     digitalWrite(led_0, LOW);
+    #endif
     
   }
 }
