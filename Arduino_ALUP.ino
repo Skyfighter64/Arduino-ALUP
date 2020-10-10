@@ -153,9 +153,7 @@ CRGB leds[NUM_LEDS];
 /*
  * TODO: Serial.ReadBytes() already waits for itself to receive the bytes 
  * remove any waiter loops etc.
- * Add Timeout constant
  * 
- * Make debug LEDs, buttons optional
  */
 
 
