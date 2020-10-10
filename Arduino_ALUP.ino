@@ -148,21 +148,6 @@ CRGB leds[NUM_LEDS];
 
 
 
-
-
-/*
- * TODO: Serial.ReadBytes() already waits for itself to receive the bytes 
- * remove any waiter loops etc.
- * 
- */
-
-
-
- 
-
-
-
-
 void setup() {
 
 
