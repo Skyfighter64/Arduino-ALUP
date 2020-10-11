@@ -86,6 +86,7 @@ Name | Default value | Valid values | Description
 Name | Default value | Valid values | Description
 --- | --- | --- | ---
  `CLOCK_PIN` | 4 | Any valid GPIO pin | The pin on the microcontroller to which the clock line of the LED strip is connected 
+ 
  Set this value to the GPIO pin to which the clock line of your LED strip is connected to. 
 
 :information_source: Some LED strips don't need a clock signal. In this case, this value will be ignored, so set it to any psoitive number you like.
