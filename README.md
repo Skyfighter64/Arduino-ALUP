@@ -81,26 +81,24 @@ Name | Default value | Valid values | Description
  
  
  
-<br/><br/>
+<br/>
  
 Name | Default value | Valid values | Description
 --- | --- | --- | ---
  `CLOCK_PIN` | 4 | Any valid GPIO pin | The pin on the microcontroller to which the clock line of the LED strip is connected 
- <br/>
  Set this value to the GPIO pin to which the clock line of your LED strip is connected to. 
 
 :information_source: Some LED strips don't need a clock signal. In this case, this value will be ignored, so set it to any psoitive number you like.
  
 
  
-<br/><br/>
+<br/>
  
  
  Name | Default value | Valid values | Description
 --- | --- | --- | ---
  `FRAME_DELAY` | 0 | Any positive value or 0 | The delay between the frames in ms.
  
- <br/>
 :information_source: Some types of LEDs may start glitching if the rate at which the microcontroller tries to change them is too high. This value is used to prevent such glitches.
 
 This value limits the maximum refresh rate of the LED strip. There are 2 options to set it for your type of LED strip:
@@ -113,13 +111,13 @@ This value limits the maximum refresh rate of the LED strip. There are 2 options
 
  
  
-<br/><br/>
+<br/>
  
  
   Name | Default value | Valid values | Description
 --- | --- | --- | ---
 `BAUD` | 115200 | Depending on th microcontroller | The baud rate used for serial communication
-<br/>
+
 :warning: The baud rate set here has to be the same as the one used for the master device
 
 The baud rate represents the amount of bits per second transfered over the serial connection.
@@ -130,20 +128,19 @@ The maximum value depends on the used hardware used. When it is too high, you ma
 
 
 
-<br/><br/>
+<br/>
 
   Name | Default value | Valid values | Description
 --- | --- | --- | ---
 `DEVICE_NAME` | "ArduinoALUP" | Any String value | The name of this device. Set it to anything you like (multiple devices can have the same name)
-<br/>
+
 The `DEVICE_NAME` can be set to aything you'd like.
 
 Its use is to distinguish between different devices if multiple microcontrollers using this sketch are connected to the same computer, so try to use differen names for each device you configure. 
 :warning: Note that multiple devices are allowed to have the same name, which means that this sketch won't give you an error or warning if it happens.
 
 
-<br/><br/>
-
+<br/>
 
  Name | Default value | Valid values | Description
 --- | --- | --- | ---
@@ -152,7 +149,7 @@ Its use is to distinguish between different devices if multiple microcontrollers
 This value is not required for normal use, unless the program you want to use with this sketch on your master device states otherwise.
 
 
-<br/><br/>
+<br/>
 
 ### Subcommands
 
