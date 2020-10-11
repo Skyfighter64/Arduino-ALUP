@@ -189,7 +189,7 @@ void loop()
   
   RequestConnection();
   state = Connecting;
-  
+   
   //try to start a ALUP connection over the serial connection
   int result = Connect();
   if(result == 0)
@@ -203,7 +203,8 @@ void loop()
 
     //connected successfully
     state = Connected;
-    
+
+    //read in data frames while connected
     while(state == Connected)
     {
       byte commandByte;
