@@ -60,7 +60,7 @@ The device is now fully set up and can be used with any serial ALUP master devic
 Once you opened the skech in the Arduino IDE, you are ready to configure it for your specific use.
 To do so, change the following values inside the sketch to fit your usecase:
 
-Configuration values:
+### Configuration values:
 
 
 Name | Default value | Valid values | Description
