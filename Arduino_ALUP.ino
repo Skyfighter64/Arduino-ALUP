@@ -1,7 +1,10 @@
 #include <FastLED.h>
 
+
 /*
  *  protocol constants 
+ *  
+ *  do not change any of them
  *
  */
 
@@ -16,6 +19,8 @@
 #define FRAME_ERROR_BYTE 249
 
 #define SUBCOMMAND_OFFSET 8
+
+
 
 /*
  * Toggole for debug mode
@@ -83,6 +88,15 @@
 #define led_2 6
 #define led_3 10
 #define led_4 11
+
+
+/*
+ *    Configuration
+ * 
+ *  The folowing values are for configuring this sketch:
+ * 
+ * 
+ */
 
 
 
@@ -252,7 +266,6 @@ void loop()
   #ifdef debug  
   digitalWrite(led_2, LOW);
   #endif
-
 
 
 
