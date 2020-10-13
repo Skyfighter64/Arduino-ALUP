@@ -26,14 +26,14 @@ This README includes the following points:
 
 
 Microcontroller | Confirmed working | Special instructions
---------------- | ----------------- | --------------------
-Ardino Uno       | No | 
-Arduino Nano   | No |
-Arduino Micro   | No | USB to Serial Converter needed
+--------------- |:-----------------:| --------------------
+Ardino Uno       | :x: | 
+Arduino Nano   | :heavy_check_mark: |
+Arduino Micro   | :x: | USB to Serial Converter needed
 
 Although only some of the listed microcontrollers are confirmed working, the other listed boards should work too.
 
-:information_source: In theory, all boards compatible with the [FastLED library] should work, but I am unable to test all of them. If you can confirm that one of the boards not listed above is working, we'll add it to the list. 
+:information_source: In theory, all boards compatible with the [FastLED library] should work, but I am unable to test all of them. If you can confirm that one of the boards not listed as confirmed above is working, we'll add it to the list. 
 
 ### Supported LED strips
 
