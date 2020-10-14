@@ -79,12 +79,6 @@ Hardware:
 
 ## Installation
 
-
-### DISCLAIMER
-
-[add disclaimer here]
-
-
 1. Download the latest version of this sketch from [here] (...) (TODO: add link to latest release)
 2. Configure it using the configuration guide below
 3. Upload it to the microcontroller
