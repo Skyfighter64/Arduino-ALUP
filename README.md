@@ -11,6 +11,7 @@ This README includes the following points:
 * Configuration
 * Usage
 * Contributing
+* Credits
 * License
 
 
@@ -332,10 +333,16 @@ Use a program which implements the ALUP, or write your own by using one of the m
 
 If you want to contribute to this project, please see CONTRIBUTING.md (TODO: add link)
 
+## Credits
+
+Libraries used:
+
+* [FastLED Library]
+
 
 ## License
 
-This project is licensed under [add license here]. For more information, see LICENSE (TODO: add link)
+This project is licensed under the MIT License. For more information, see [LICENSE](https://github.com/Skyfighter64/Arduino-ALUP/blob/master/LICENSE)
 
 
 [FastLED Library]: https://github.com/FastLED/FastLED
