@@ -472,7 +472,6 @@ void writeBytes(byte bytes[], int numOfBytes)
  * Note: This function blocks until the specified number of bytes is read
  * @param buff: an array of bytes with a size of numOfBytes in which the read bytes will get stored
  * @param numOfBytes: the number of bytes to read 
- * 
  */
 void readBytes(byte buff[], int numOfBytes)
 {
@@ -545,7 +544,7 @@ void DiscardBytes(long numOfBytes)
     }
 
     //read the bytes in from the serial buffer
-    Serial.readBytes(buff, numOfBytes);
+    readBytes(buff, numOfBytes);
     free(buff);
 
     #ifdef debug
@@ -609,11 +608,11 @@ long ReceiveHeader(byte *commandByte, long *offset)
 {
    while(true)
    {
-      if(Serial.available() >= 9)
+      if(availableBytes() >= 9)
       {
         //receive the header bytes over the serial connection
         byte headerBytes[9];
-        Serial.readBytes(headerBytes, 9);
+        readBytes(headerBytes, 9);
 
         //set the command byte according to the ALUP v. 0.1 (internal)
         *commandByte = headerBytes[8];
@@ -675,7 +674,7 @@ void ReceiveBody(long bodySize, long bodyOffset, byte commandByte)
  
 
   //read the bytes from the serial port into the buffer
-  Serial.readBytes(buff, bodySize);
+  readBytes(buff, bodySize);
   
   //loop through all received bytes and apply them to the "leds" array
   for(int i = 0; i < bodySize / 3; i++)
@@ -702,7 +701,7 @@ void RequestConnection()
   {
     
     //Send a connection request
-    Serial.write(new byte[1] {CONNECTION_REQUEST_BYTE}, 1);
+    writeBytes(new byte[1] {CONNECTION_REQUEST_BYTE}, 1);
 
     //wait for a connection acknowledgement
     if(WaitForByte(CONNECTION_ACKNOWLEDGEMENT_BYTE, 250))
@@ -798,11 +797,11 @@ int WaitForOneOf(byte* bytes, int bytesLength, int timeOut)
    while(passedTime <= timeOut)
    {
     //check if there are bytes to read in the serial buffer
-      if(Serial.available() > 0)
+      if(availableBytes() > 0)
       {
           //read one byte from the serial buffer
           byte buff[1];
-          Serial.readBytes(buff, 1);
+          readBytes(buff, 1);
     
           //check if the received byte was one of the given bytes
           for(int i = 0; i < bytesLength; i++)
@@ -830,7 +829,7 @@ int WaitForOneOf(byte* bytes, int bytesLength, int timeOut)
 void SendConfigurationStartByte()
 {
   byte txBytes[] = {CONFIGURATION_START_BYTE}; 
-  Serial.write(txBytes, 1);
+  writeBytes(txBytes, 1);
 }
 
 
@@ -841,7 +840,7 @@ void SendConfigurationStartByte()
 void SendConfigurationAcknowledgementByte()
 {
   byte txBytes[] = {CONFIGURATION_ACKNOWLEDGEMENT_BYTE}; 
-  Serial.write(txBytes, 1);
+  writeBytes(txBytes, 1);
 }
 
 
@@ -852,7 +851,7 @@ void SendConfigurationAcknowledgementByte()
 void SendFrameAcknowledgementByte()
 {
   byte txBytes[] = {FRAME_ACKNOWLEDGEMENT_BYTE}; 
-  Serial.write(txBytes, 1);
+  writeBytes(txBytes, 1);
 }
 
 
@@ -863,7 +862,7 @@ void SendFrameAcknowledgementByte()
 void SendFrameErrorByte()
 {
   byte txBytes[] = {FRAME_ERROR_BYTE}; 
-  Serial.write(txBytes, 1);
+  writeBytes(txBytes, 1);
 }
 
 
@@ -873,8 +872,9 @@ void SendFrameErrorByte()
  */
 void SendString(String text)
 { 
+  //TODO: replace serial.print() with writeBytes and string to bytes conversion
     Serial.print(text);
-    Serial.write('\0');
+    writeBytes('\0');
 }
 
 
@@ -892,7 +892,7 @@ void SendLong(long number)
   LongToBytes(number, outBytes);
 
   //send the bytes over the serial connection
-  Serial.write(outBytes, 4);
+  writeBytes(outBytes, 4);
 }
 
 
