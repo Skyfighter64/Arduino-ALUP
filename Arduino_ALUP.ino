@@ -872,9 +872,24 @@ void SendFrameErrorByte()
  */
 void SendString(String text)
 { 
-  //TODO: replace serial.print() with writeBytes and string to bytes conversion
-    Serial.print(text);
-    writeBytes('\0');
+    int buffSize = text.length() + 1;
+    byte* buff = malloc(buffSize);
+    
+    StringToBytes(text, buff, buffSize);
+    writeBytes(buff, buffSize);
+    
+    free(buff);
+}
+
+/**
+ * function converting the given text to UTF-8 bytes including a null terminator
+ * @param text: the text to convert
+ * @param outBytes: the converted text including a null terminator; has to have a size of text.length() + 1
+ * @param outBytesLength: the length of the outBytes array; has to be text.length() + 1
+ */
+void StringToBytes(String text, byte outBytes[], int outBytesLength)
+{
+  text.getBytes(outBytes, outBytesLength);
 }
 
 
