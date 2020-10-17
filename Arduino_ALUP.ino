@@ -23,7 +23,7 @@
 
 
 /*
- * Toggole for debug mode
+ * Toggle for debug mode
  * 
  * Comment to deactivate debug LEDs, uncomment to activate
  * 
@@ -31,7 +31,7 @@
  * to help for following the protocol flow of this device and debug the program
  */
  
-//#define debug
+#define debug
 
 /*
   * Debug LED Signals:
@@ -132,7 +132,7 @@
  * the device name 
  * set it to anything you like
  */
-#define DEVICE_NAME "WS2812b@ArduinoNano"
+#define DEVICE_NAME "ArduinoALUP"
 
 /*
  * extra configuration values
@@ -343,7 +343,7 @@ void ExecuteSubCommand(byte id)
         break;
 
       /*
-       * add your own subprograms here by adding a new case with an unused ID ranging from 0-247
+       * add your own subprograms here by adding a new 'case' with an unused ID ranging from 0-247
        *Example subprogram with an ID of 1:
        *
        *case 1:
@@ -455,6 +455,39 @@ int Connect()
   SendConfigurationAcknowledgementByte();   
   return 0;
 }
+
+
+/**
+ * wrapper function for reading in bytes over the hardware connection
+ * @param buff: an array of bytes with a size of numOfBytes which should get sent over the hardware connection
+ * @param numOfBytes: the number of bytes to write
+ */
+void writeBytes(byte bytes[], int numOfBytes)
+{
+  Serial.write(bytes, numOfBytes);
+}
+
+/**
+ * wrapper function for writing bytes over the hardware connection
+ * Note: This function blocks until the specified number of bytes is read
+ * @param buff: an array of bytes with a size of numOfBytes in which the read bytes will get stored
+ * @param numOfBytes: the number of bytes to read 
+ * 
+ */
+void readBytes(byte buff[], int numOfBytes)
+{
+  Serial.readBytes(buff, numOfBytes);
+}
+
+/**
+ * wrapper function for getting the number of available bytes from the hardware connection
+ * @return: the number of available bytes
+ */
+int availableBytes()
+{
+    return Serial.available();
+}
+
 
 
 
@@ -956,14 +989,3 @@ int IntToBytes(unsigned int number, unsigned char * outBytes)
   
   return 2;
 }
-
-
-
-
-
-
-
-
-
-
-
