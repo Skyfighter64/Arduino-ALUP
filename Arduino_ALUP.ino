@@ -939,7 +939,7 @@ unsigned long BytesToUnsignedLong(byte bytes[])
  */
 long BytesToLong(byte bytes[])
 {
-  unsigned long number = 0;
+  long number = 0;
 
   //shift each byte to its correspondig position and add it to the number
   number += (long) bytes[0] << 24;
