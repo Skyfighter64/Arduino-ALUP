@@ -161,6 +161,12 @@ ConnectionState state;
 CRGB leds[NUM_LEDS];
 
 
+//the time of the last frame applied since the start of the program
+//used to calculate the remaining frame delay
+unsigned long last_frame_time = 0;
+
+
+
 
 void setup() {
 
@@ -561,14 +567,25 @@ void DiscardBytes(long numOfBytes)
  */
 void ShowFrame()
 {
-    FastLED.show();
-
+    /*
+     * calculate the effective delay depending on the time since the last frame applied
+     */
+    unsigned long timeSinceLastFrame = (millis() - last_frame_time);
+    unsigned long effectiveDelay = max((long) (FRAME_DELAY - timeSinceLastFrame), (long)0);
+    
     /*
      * delay the frame acknowledgement
      * This has to be done for some types of LEDs like WS2812b as they have a maximum data rate 
      * To change the delay, edit the constant FRAME_DELAY at the top of the script
-     */
-    delay(FRAME_DELAY);
+     */  
+     
+    delay(effectiveDelay);
+    
+    
+    FastLED.show();
+   
+    //set the last frame time to the current time in ms
+    last_frame_time = millis();
 }
 
 
