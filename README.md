@@ -26,7 +26,7 @@ This README includes the following points:
 ### Supported Microcontrollers:
 
 
-Microcontroller | Confirmed working | Special instructions
+Microcontroller | Tested | Special instructions
 --------------- |:-----------------:| --------------------
 Ardino Uno       | :x: | 
 Arduino Nano   | :heavy_check_mark: |
@@ -34,9 +34,9 @@ Arduino Micro   | :x: | USB to Serial Converter needed
 ESP8266 | :heavy_check_mark: | Multiple ways of digital pin selection. See [here](https://github.com/FastLED/FastLED/wiki/ESP8266-notes "FastLED notes on ESP8266") for details
 ESP32 | :x: |
 
-Although only some of the listed microcontrollers are confirmed working, the other listed boards should work too.
+Although only some of the listed microcontrollers are confirmed working, all of the boards listed above should work.
 
-:information_source: In theory, all boards compatible with the [FastLED library] should work, but I am unable to test all of them. If you can confirm that one of the boards not listed as confirmed above is working, we'll add it to the list. 
+:information_source: In theory, all boards compatible with the [FastLED library] should work, but I am unable to test all of them. If you can confirm that one of the boards not listed as tested is working, we'll add it to the list. 
 
 ### Supported LED strips
 
