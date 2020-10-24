@@ -40,7 +40,36 @@ Although only some of the listed microcontrollers are confirmed working, all of 
 
 ### Supported LED strips
 
- * All individually addressable LED strips supported by the [FastLED library]
+ * All individually addressable LED strips supported by the [FastLED library], including:
+ 
+ LED Type | Tested | Special instructions
+--------------- |:-----------------:| --------------------
+APA102 | :x: |
+APA104 | :x: |
+DOTSTAR | :x: |
+GW6205 | :x: |
+GW6205_400 | :x: |
+LPD8806 | :x: |
+NEOPIXEL | :x: |
+P9813 | :x: |
+SM16716 | :x: |
+TM1803 | :x: |
+TM1804 | :x: |
+TM1809 | :x: |
+TM1809 | :x: |
+UCS1903 | :x: |
+UCS1903B | :x: |
+WS2801 | :x: |
+WS2812 | :x: |
+WS2812B | :heavy_check_mark: |
+
+
+
+:information_source: I am unable to test all of the LED types listed above. If you can confirm one of them working, it will be added to the list.
+
+
+
+
 
 
 ### Protocol specific
