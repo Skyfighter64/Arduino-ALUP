@@ -31,6 +31,8 @@ Microcontroller | Confirmed working | Special instructions
 Ardino Uno       | :x: | 
 Arduino Nano   | :heavy_check_mark: |
 Arduino Micro   | :x: | USB to Serial Converter needed
+ESP8266 | :heavy_check_mark: | Multiple ways of digital pin selection. See [here](https://github.com/FastLED/FastLED/wiki/ESP8266-notes "FastLED notes on ESP8266") for details
+ESP32 | :x: |
 
 Although only some of the listed microcontrollers are confirmed working, the other listed boards should work too.
 
