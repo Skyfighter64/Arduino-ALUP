@@ -1,5 +1,5 @@
 # Arduino-ALUP
-An ALUP implementation for Arduino and Arduino-Compatible Boards using the Serial Connection. It is used to control an individually addressable LED strip from a Computer or any other device, using a microcontroller as a proxy (middle-man) over a USB / Serial connection.
+An ALUP implementation for Arduino and Arduino-Compatible Boards. Userd to control an individually addressable LED strip from a Computer or any other device, using a microcontroller.
 
 ## Table of Contents
 
@@ -18,10 +18,10 @@ This README includes the following points:
 ## Specifications
 
 ### Compatible Protocol Versions
-  * ALUP v.0.1 (internal)
+  * ALUP v.0.2 
   
 ### Compatible Connection Types
-  * USB (using Serial)
+  * UDP over WiFi
 
 ### Supported Microcontrollers:
 
@@ -29,14 +29,13 @@ This README includes the following points:
 Microcontroller | Tested | Special instructions
 --------------- |:-----------------:| --------------------
 Ardino Uno       | :x: | 
-Arduino Nano   | :heavy_check_mark: |
+Arduino Nano   | :x: |
 Arduino Micro   | :x: | USB to Serial Converter needed
-ESP8266 | :heavy_check_mark: | Multiple ways of digital pin selection. See [here](https://github.com/FastLED/FastLED/wiki/ESP8266-notes "FastLED notes on ESP8266") for details
-ESP32 | :x: |
+ESP8266 | ? | Multiple ways of digital pin selection. See [here](https://github.com/FastLED/FastLED/wiki/ESP8266-notes "FastLED notes on ESP8266") for details
+ESP32 | :heavy_check_mark: | 
 
-Although only some of the listed microcontrollers are confirmed working, all of the boards listed above should work.
 
-:information_source: In theory, all boards compatible with the [FastLED library] should work, but I am unable to test all of them. If you can confirm that one of the boards not listed as tested is working, we'll add it to the list. 
+:information_source: All boards compatible with the [FastLED library] should work, but I can't test all of them.
 
 ### Supported LED strips
 
@@ -44,31 +43,28 @@ Although only some of the listed microcontrollers are confirmed working, all of 
  
  LED Type | Tested | Special instructions
 --------------- |:-----------------:| --------------------
-APA102 | :x: |
-APA104 | :x: |
-DOTSTAR | :x: |
-GW6205 | :x: |
-GW6205_400 | :x: |
-LPD8806 | :x: |
-NEOPIXEL | :x: |
-P9813 | :x: |
-SM16716 | :x: |
-TM1803 | :x: |
-TM1804 | :x: |
-TM1809 | :x: |
-UCS1903 | :x: |
-UCS1903B | :x: |
-WS2801 | :x: |
-WS2812 | :x: |
+APA102 | ? |
+APA104 | ? |
+DOTSTAR | ? |
+GW6205 | ? |
+GW6205_400 | ? |
+LPD8806 | ? |
+NEOPIXEL | ? |
+P9813 | ? |
+SM16716 | ? |
+TM1803 | ? |
+TM1804 | ? |
+TM1809 | ? |
+UCS1903 | ? |
+UCS1903B | ? |
+WS2801 | ? |
+WS2812 | ? |
 WS2812B | :heavy_check_mark: |
 
 
 
-:information_source: I am unable to test all of the LED types listed above. If you can confirm one of them working, it will be added to the list.
 
-
-
-
+# TODO: Change the docs below for v.0.2
 
 
 ### Protocol specific
