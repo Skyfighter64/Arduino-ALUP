@@ -303,9 +303,9 @@ int Alup::ApplyFrame(Frame frame)
             Disconnect();
             Serial.println("Disconnected");
             return -1;
-        case Command::LED_BUILTIN:
+        case Command::TOGGLE_INTERNAL_LED:
             //test command for power LED
-            // initialite pin2 first!
+            // initialize pin2 as output first!
             digitalWrite(2, !digitalRead(2));
 
         default:

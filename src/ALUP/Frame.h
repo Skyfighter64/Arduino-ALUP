@@ -25,7 +25,7 @@ enum Command
   NONE = 0,
   CLEAR = 1,
   DISCONNECT = 2,
-  LED_BUILTIN = 4
+  TOGGLE_INTERNAL_LED = 4
 };
 
 #endif
