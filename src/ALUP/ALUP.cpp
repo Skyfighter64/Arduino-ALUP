@@ -27,26 +27,27 @@ Alup::Alup(CRGB* _leds, int _ledCount, int _dataPin, int _clockPin) : leds {_led
  */
 int Alup::Connect(Connection* _connection, String deviceName,  String extraValues)
 {
+    //Initilalize builtin LED for TOGGLE_INTERNAL_LED command
     pinMode(2, OUTPUT);
     connection = _connection;
     connection->Connect();
 
-    Serial.println("UDP connection established");
-    Serial.println("Requesting ALUP connection");
+    //Serial.println("UDP connection established");
+    //Serial.println("Requesting ALUP connection");
 
     RequestAlupConnection();
 
-    Serial.println("ALUP connection established");
-    Serial.println("Sending configuration");
+    //Serial.println("ALUP connection established");
+    //Serial.println("Sending configuration");
     if(!SendConfiguration(deviceName, dataPin, clockPin, ledCount, extraValues))
     {
         connected = false;
-        Serial.println("Configuration error");
+        //Serial.println("Configuration error");
         return 0;
     }
 
     connected = true;
-    Serial.println("Finnished connecting");
+    //Serial.println("Finnished connecting");
     return 1;
 }
 
@@ -87,11 +88,11 @@ void Alup::RequestAlupConnection()
  */
 int Alup::SendConfiguration(String deviceName, int dataPin, int clockPin, int ledCount, String extraValues)
 {
-    Serial.println("Building Configuration...");
+    //Serial.println("Building Configuration...");
 
     byte* buff;
     int length = BuildConfiguration(buff, PROTOCOL_VERSION, deviceName, dataPin, clockPin, ledCount, extraValues);
-    Serial.println("Sending Configuration...");
+    //Serial.println("Sending Configuration...");
     connection->Send(buff, length);
     free(buff);
 
@@ -102,14 +103,14 @@ int Alup::SendConfiguration(String deviceName, int dataPin, int clockPin, int le
         if(byte == CONFIGURATION_ACKNOWLEDGEMENT_BYTE)
         {
             //configuration exchanged successfully
-            Serial.println("Configuration exchanged successfully!");
+            //Serial.println("Configuration exchanged successfully!");
             //continue normally
             return 1;
         }
         else if (byte == CONFIGURATION_ERROR_BYTE)
         {
             //configuration exchange failed
-            Serial.println("Configuration exchange failed.");
+            //Serial.println("Configuration exchange failed.");
             //abort the connection process 
             return 0;
         }
@@ -231,20 +232,20 @@ void Alup::Run()
         return;
     }
 
-    Serial.println("Waiting for frame");
+    //Serial.println("Waiting for frame");
     Frame frame = ReadFrame();
-    Serial.println("Received a frame:");
-    Serial.print("body size:");
-    Serial.println(frame.body_size);
-    Serial.print("body offset:");
-    Serial.println(frame.offset);
-    Serial.print("Command:");
-    Serial.println(frame.command);
+    //Serial.println("Received a frame:");
+    //Serial.print("body size:");
+    //Serial.println(frame.body_size);
+    //Serial.print("body offset:");
+    //Serial.println(frame.offset);
+    //Serial.print("Command:");
+    //Serial.println(frame.command);
     //apply the frame to the leds
     int result = ApplyFrame(frame);
     if(result == 0)
     {
-        Serial.println("Frame error occured");
+        //Serial.println("Frame error occured");
         //frame could not be applied; answer with frame error
         SendByte(FRAME_ERROR_BYTE);
     }
@@ -252,9 +253,9 @@ void Alup::Run()
     {
         //frame applied successfully
         //acknowledge frame
-        Serial.println("Frame applied successfully");
+        //Serial.println("Frame applied successfully");
         SendByte(FRAME_ACKNOWLEDGEMENT_BYTE);
-        Serial.println("Sent Frame Acknowledgement");
+        //Serial.println("Sent Frame Acknowledgement");
     }
 }
 
@@ -272,8 +273,8 @@ Frame Alup::ReadFrame()
     frame.unused = ReadByte();
 
     frame.body = (byte*) malloc(frame.body_size);
-    Serial.print("Reading in body of size ");
-    Serial.println(frame.body_size);
+    //Serial.print("Reading in body of size ");
+    //Serial.println(frame.body_size);
     connection->Read(frame.body, frame.body_size); 
     return frame;
 }
@@ -295,23 +296,24 @@ int Alup::ApplyFrame(Frame frame)
             return ApplyColors(frame);
 
         case Command::DISCONNECT: 
-            Serial.println("Disconnecting...");
+            //Serial.println("Disconnecting...");
             //acknowledge the disconnect
             SendByte(FRAME_ACKNOWLEDGEMENT_BYTE);
             delay(100);
             //disconnect from the remote device
             Disconnect();
-            Serial.println("Disconnected");
+            //Serial.println("Disconnected");
             return -1;
         case Command::TOGGLE_INTERNAL_LED:
             //test command for power LED
             // initialize pin2 as output first!
             digitalWrite(2, !digitalRead(2));
+            return 1;
 
         default:
             //invalid command received
-            Serial.print("Invalid command received: ");
-            Serial.println(frame.command);
+            //Serial.print("Invalid command received: ");
+            //Serial.println(frame.command);
             return 0;
     }
 }

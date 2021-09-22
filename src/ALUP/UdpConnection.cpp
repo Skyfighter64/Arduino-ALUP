@@ -19,7 +19,6 @@ UdpConnection::UdpConnection(char* _wifiSSID, char* _wifiPassword, char* _ip, in
 
 /**
  * function establishing a wifi and duplex udp connection using the given parameters
-
  */
 void UdpConnection::Connect()
 {
