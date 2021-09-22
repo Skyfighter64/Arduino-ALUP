@@ -4,6 +4,8 @@
 #include "Connection.h"
 #include "Arduino.h"
 
+#define SERIAL_TIMEOUT_MS 10000
+
 /**
  * class implementing serial connectivity for this library
  */
@@ -27,6 +29,9 @@ public:
      */
     void Connect()
     {
+        //set the serial timeout to 10s
+        //this value may need adjustment
+        Serial.setTimeout(SERIAL_TIMEOUT_MS);
         Serial.begin(baud);
     }
     /**
