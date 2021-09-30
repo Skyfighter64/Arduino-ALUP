@@ -22,6 +22,7 @@ This README includes the following points:
   
 ### Compatible Connection Types
   * UDP over WiFi
+  * Serial over USB
 
 ### Supported Microcontrollers:
 
