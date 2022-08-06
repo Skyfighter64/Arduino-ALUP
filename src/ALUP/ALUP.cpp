@@ -241,7 +241,8 @@ byte Alup::ReadByte()
 void Alup::SendByte(byte b)
 {
     //send the data
-    connection->Send(new byte[1] {b}, 1);
+    byte buff[] = {b};
+    connection->Send(buff, 1);
 }
 
 
@@ -267,10 +268,20 @@ void Alup::Run()
 
     //apply the frame to the leds
     int result = ApplyFrame(frame);
+    
+    //free the ressources allocated in ReadFrame()
+    free(frame.body);
+    
     if(result == 0)
     {
-        Serial.println("Frame error occured");
-        //frame could not be applied; answer with frame error
+        //A frame error occured
+        //frame could not be applied
+        //flush all data
+        while(connection->Available() > 0 )
+        {
+          ReadByte();
+        }
+        //answer with frame error
         SendByte(FRAME_ERROR_BYTE);
     }
     else if (result == 1)
