@@ -310,7 +310,6 @@ Frame Alup::ReadFrame()
     frame.body = (byte*) malloc(sizeof(byte)* frame.body_size);
     if(frame.body == nullptr)
     {
-
       //Not enough memory left for the incoming frame body
       Blink(RED_2, 5, 250); 
       delay(500);
@@ -364,8 +363,18 @@ int Alup::ApplyFrame(Frame frame)
  */
  int Alup::ApplyColors(Frame frame)
  {
+    //check if the frame offset is valid
+    if (frame.offset >= ledCount)
+    {
+        // invalid offset
+        //not a multiple of 3
+        Blink(RED_1, 2, 250);
+        Blink(RED_2, 2, 250);
+        delay(500);
+        return 0;
+    }
+
     //check the frame body size if it is a multiple of 3 
-    
     if(frame.body_size % 3 != 0)
     {
         //not a multiple of 3
