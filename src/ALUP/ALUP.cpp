@@ -201,13 +201,13 @@ int Alup::BuildConfiguration(byte*& buffer, String protocolVersion, String devic
     memcpy( &buffer[offset], &nameBytes[0], nameLength);
     offset += nameLength;
     //copy the data pin
-    memcpy( &buffer[offset], &dataPinBytes[0], 4);
+    memcpy( &buffer[offset], &ledCountBytes[0], 4);
     offset += 4;
     //copy the clock pin
-    memcpy( &buffer[offset], &clockPinBytes[0], 4);
+    memcpy( &buffer[offset], &dataPinBytes[0], 4);
     offset += 4;
     //copy the led count
-    memcpy( &buffer[offset], &ledCountBytes[0], 4);
+    memcpy( &buffer[offset], &clockPinBytes[0], 4);
     offset += 4;
     //copy the extra values
     memcpy( &buffer[offset], &extraValuesBytes[0], extraValuesLength);
