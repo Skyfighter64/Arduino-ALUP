@@ -17,12 +17,12 @@ public:
      * default constructor
      * @param _baud: the communication speed of the devices
      */
-    SerialConnection(int _baud) : baud{_baud}
+    SerialConnection(long _baud) : baud{_baud}
     {
-
+      
     }
 
-    int baud = 115200;
+    long baud = 115200;
 
     /**
      * function establishing the connection
@@ -32,7 +32,8 @@ public:
         //set the serial timeout to 10s
         //this value may need adjustment
         Serial.setTimeout(SERIAL_TIMEOUT_MS);
-        Serial.begin(baud);
+        Serial.begin(baud);    
+        delay(100);   
     }
     /**
      * function terminating the connection
@@ -59,6 +60,11 @@ public:
      */
     int Read(uint8_t* buffer, size_t length) 
     {
+        while(Available() < length)
+        {
+          //wait for data
+        } 
+        
         return Serial.readBytes(buffer, length);
     }
     /**

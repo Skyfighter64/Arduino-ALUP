@@ -1,9 +1,10 @@
 #include <Arduino.h>
 #include <FastLED.h>
-#include "ALUP/UdpConnection.h"
-#include "ALUP/SerialConnection.h"
-#include "ALUP/ALUP.h"
-#include "WiFi_Credentials.h"
+//#include "UdpConnection.h"
+#include "SerialConnection.h"
+#include "ALUP.h"
+
+//#include "WiFi_Credentials.h"
 
 #define NUM_LEDS 10
 #define DATA_PIN 12
@@ -18,12 +19,20 @@ SerialConnection connection = SerialConnection(115200);
 
 void setup()
 {
-    //Serial.begin(115200);
-    //Serial.println("Starting connection attempt");
-    alup.Connect(&connection, "Test", "Extra values");
+    //initialize the LEDS
+    FastLED.addLeds<WS2812B, DATA_PIN, GRB>(leds, NUM_LEDS);
+    
 }
 void loop()
 {
+    //try to connect if not connected
+    if(!alup.connected)
+    {
+      //try to connect/reconnect
+      delay(1000);
+      alup.Connect(&connection, "Test", "Extra values");
+      
+    }
+    //run the ALUP main loop
     alup.Run();
 }
-
