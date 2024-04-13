@@ -60,12 +60,21 @@ public:
      */
     int Read(uint8_t* buffer, size_t length) 
     {
-        while(Available() < length)
+        // use a temporary buffer as the builtin serial buffer is 64B max
+        // which is to small for some applications 
+        uint8_t temp[1];
+        for(size_t i = 0; i < length; i ++)
         {
-          //wait for data
-        } 
-        
-        return Serial.readBytes(buffer, length);
+            while(Available() < 1)
+            {
+                //wait for data
+            } 
+            //read the next byte from the serial connection
+            Serial.readBytes(temp, 1);
+            buffer[i] = temp[0];
+        }
+
+        return length;
     }
     /**
      * function returning the number of bytes in the read buffer
