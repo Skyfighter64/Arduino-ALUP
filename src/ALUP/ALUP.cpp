@@ -340,7 +340,7 @@ int Alup::ApplyFrame(Frame frame)
             delay(100);
             //disconnect from the remote device
             Disconnect();
-            return -1;
+            return 1;
         case Command::TOGGLE_INTERNAL_LED:
             //test command for power LED
             // initialize pin2 as output first!
