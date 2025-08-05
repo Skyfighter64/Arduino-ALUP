@@ -1,7 +1,7 @@
 #ifndef UDP_CONNECTION_H
 #define UDP_CONNECTION_H
 
-#include "Connection.h"
+#include "ALUP/Connection.h"
 #include <WiFi.h>
 #include <WiFiUdp.h>
 
