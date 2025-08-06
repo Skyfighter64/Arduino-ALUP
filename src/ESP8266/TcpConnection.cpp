@@ -70,7 +70,7 @@ void TcpConnection::ConnectToWifi(char* _ssid, char* _password)
 void TcpConnection::Disconnect()
 {
     tcp.stop();
-    WiFi.disconnect();
+    //WiFi.disconnect();
     connected = false;
     Serial.println("Disconnected from WiFi.");
 }
