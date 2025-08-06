@@ -3,8 +3,8 @@
 
 // choose the connection type
 //#include "ESP32/UdpConnection.h"
-#include "ESP8266/TcpConnection.h"
-//#include "ALUP/SerialConnection.h"
+//#include "ESP8266/TcpConnection.h"
+#include "ALUP/SerialConnection.h"
 
 #include "ALUP/ALUP.h"
 
@@ -19,8 +19,8 @@ CRGB leds[NUM_LEDS];
 
 Alup alup(leds, NUM_LEDS, DATA_PIN, CLOCK_PIN);
 //UdpConnection connection = UdpConnection(SSID, PASSWORD, "192.168.178.35", 5012);
-TcpConnection connection = TcpConnection(SSID, PASSWORD, 5012);
-//SerialConnection connection = SerialConnection(115200);
+//TcpConnection connection = TcpConnection(SSID, PASSWORD, 5012);
+SerialConnection connection = SerialConnection(115200);
 
 void setup()
 {
