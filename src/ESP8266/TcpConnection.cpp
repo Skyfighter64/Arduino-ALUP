@@ -24,15 +24,19 @@ void TcpConnection::Connect()
     ConnectToWifi(wifiSSID, wifiPassword);
     //start the TCP listener
     WiFiServer server(receivingPort);
+    server.begin();
 
+    Serial.println("Waiting for TCP connection");
     // wait until someone connects to the tcp listener
-    while(!tcp)
+    while(!tcp && !tcp.connected())
     {
         delay(100);
+
         tcp = server.accept();
     }
     connected = true;
-}
+    Serial.println("TCP Connected");
+}   
 
 /**
  * function establishing a wifi connection using the given credentials
