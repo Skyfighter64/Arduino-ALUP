@@ -1,12 +1,6 @@
 #include "ALUP.h"
 #include "Convert.h"
 
-//define led pins for debugging
-#define BLUE_1 3
-#define BLUE_2 5
-#define GREEN 6
-#define RED_1 10
-#define RED_2 11
 /**
  * default constructor
  * @param _leds: the led array used by FastLED
@@ -32,34 +26,8 @@ Alup::Alup(CRGB* _leds, int _ledCount, int _dataPin, int _clockPin) : leds {_led
  */
 int Alup::Connect(Connection* _connection, String deviceName,  String extraValues)
 {
-    //initialize debugging LEDs
-    //TODO: remove
-    pinMode(2, OUTPUT);
-    pinMode(BLUE_1, OUTPUT);
-    pinMode(BLUE_2, OUTPUT);
-    pinMode(GREEN, OUTPUT);
-    pinMode(RED_1, OUTPUT);
-    pinMode(RED_2,OUTPUT);
-
-    //test all leds
-    digitalWrite(BLUE_1, HIGH);
-    delay(80);
-    digitalWrite(BLUE_2, HIGH);
-    delay(80);
-    digitalWrite(GREEN, HIGH);
-    delay(80);
-    digitalWrite(RED_1, HIGH);
-    delay(80);
-    digitalWrite(RED_2, HIGH);
-    delay(80);
-
-    digitalWrite(2, LOW);
-    digitalWrite(BLUE_1, LOW);
-    digitalWrite(BLUE_2, LOW);
-    digitalWrite(GREEN, LOW);
-    digitalWrite(RED_1, LOW);
-    digitalWrite(RED_2, LOW);
-
+    // enable builtin led
+    pinMode(LED_BUILTIN, OUTPUT);
     //establish the data connection
     connection = _connection;
     connection->Connect();
@@ -87,10 +55,6 @@ void Alup::RequestAlupConnection()
 {
     while(true)
     {
-        digitalWrite(BLUE_1, HIGH);
-        delay(200);
-        digitalWrite(BLUE_1, LOW);
-        delay(200);
         SendByte(CONNECTION_REQUEST_BYTE);
         //check if there is something to read
         if(connection->Available() <= 0)
@@ -261,7 +225,6 @@ void Alup::Run()
     {
         return;
     }
-    digitalWrite(GREEN, HIGH);
 
     //read in the frame
     Frame frame = ReadFrame();
@@ -311,7 +274,6 @@ Frame Alup::ReadFrame()
     if(frame.body == nullptr)
     {
       //Not enough memory left for the incoming frame body
-      Blink(RED_2, 5, 250); 
       delay(500);
     }
     connection->Read(frame.body, frame.body_size);
@@ -368,8 +330,6 @@ int Alup::ApplyFrame(Frame frame)
     {
         // invalid offset
         //not a multiple of 3
-        Blink(RED_1, 2, 250);
-        Blink(RED_2, 2, 250);
         delay(500);
         return 0;
     }
@@ -378,7 +338,6 @@ int Alup::ApplyFrame(Frame frame)
     if(frame.body_size % 3 != 0)
     {
         //not a multiple of 3
-        Blink(RED_2, 3, 250);
         delay(500);
         return 0;
     }
