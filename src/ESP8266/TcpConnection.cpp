@@ -13,6 +13,7 @@ TcpConnection::TcpConnection(char* _wifiSSID, char* _wifiPassword, int _port) : 
     {
         Serial.begin(115200);
     }
+    pinMode(LED_BUILTIN, OUTPUT);
 }
 
 /**
@@ -30,6 +31,9 @@ void TcpConnection::Connect()
     // wait until someone connects to the tcp listener
     while(!tcp && !tcp.connected())
     {
+        digitalWrite(LED_BUILTIN, HIGH);
+        delay(100);
+        digitalWrite(LED_BUILTIN, LOW);
         delay(100);
 
         tcp = server.accept();
@@ -57,7 +61,10 @@ void TcpConnection::ConnectToWifi(char* _ssid, char* _password)
     while(WiFi.status() != WL_CONNECTED)
     {
         Serial.print(".");
+        digitalWrite(LED_BUILTIN, HIGH);
         delay(500);
+        digitalWrite(LED_BUILTIN, LOW);
+        delay(100);
     }
     Serial.println("Connected.");
     Serial.print("IP address: ");
@@ -140,3 +147,4 @@ bool TcpConnection::isConnected()
 {
     return connected;
 }
+
