@@ -68,9 +68,9 @@ void UdpConnection::Disconnect()
 /**
  * function sending the given bytes over the udp connection
  * @param bytes: the bytes to send
- * @param lenght: the length of the bytes array
+ * @param length: the length of the bytes array
  */
-void UdpConnection::Send(uint8_t* bytes, size_t lenght)
+void UdpConnection::Send(uint8_t* bytes, size_t length)
 {
     if(!WiFi.isConnected() || !isConnected())
     {
@@ -78,14 +78,14 @@ void UdpConnection::Send(uint8_t* bytes, size_t lenght)
         return;
     }
     Serial.println("Sending: ");
-    for(int i = 0; i < lenght; i ++)
+    for(int i = 0; i < length; i ++)
     {
         Serial.print(bytes[i]);
         Serial.print(" ");
     }
     Serial.println();
     udp.beginPacket(ip, port);
-    udp.write(bytes, lenght);
+    udp.write(bytes, length);
     udp.endPacket();
 }
 

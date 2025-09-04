@@ -15,7 +15,7 @@ Alup::Alup(CRGB* _leds, int _ledCount, int _dataPin, int _clockPin) : leds {_led
 
 
 /**
- * function esablishing an ALUP connection
+ * function establishing an ALUP connection
  * @param _connection: a connection object to use for the protocol
  * @param deviceName: a name for this device
  * @param dataPin: the data Pin of the LED strip; 0 if not used
@@ -114,7 +114,7 @@ int Alup::SendConfiguration(String deviceName, int dataPin, int clockPin, int le
 /**
  * function generating a byte array containing the given values
  * @param buffer: the buffer in which the result will be stored. Has to be free()'d!!
- * @param protocolVersion: the protcol version of this implementation. Usually PROTOCOL_VERSION
+ * @param protocolVersion: the protocol version of this implementation. Usually PROTOCOL_VERSION
  * @param deviceName: a name for this device
  * @param dataPin: the data Pin of the LED strip; 0 if not used
  * @param clockPin: the clock pin of the LED strip; 0 if not used
@@ -158,7 +158,7 @@ int Alup::BuildConfiguration(byte*& buffer, String protocolVersion, String devic
     //concatenate all byte arrays  
     //using an offset so that the arrays get concatenated
     int offset = 1;
-    //copy the protcol version
+    //copy the protocol version
     memcpy( &buffer[offset], &versionBytes[0], versionLength);
     offset += versionLength;
     //copy the device name
@@ -237,7 +237,7 @@ void Alup::Run()
     
     if(result == 0)
     {
-        //A frame error occured
+        //A frame error occurred
         //frame could not be applied
         //flush all data
         while(connection->Available() > 0 )
@@ -283,7 +283,7 @@ Frame Alup::ReadFrame()
 /**
  * function applying the given frame by executing its command
  * @param frame: the frame to apply
- * @return: 1 if applied successfully, 0 if frame error occured, -1 if no acknowledgement should be sent
+ * @return: 1 if applied successfully, 0 if frame error occurred, -1 if no acknowledgement should be sent
  */
 int Alup::ApplyFrame(Frame frame)
 {
@@ -342,7 +342,7 @@ int Alup::ApplyFrame(Frame frame)
         return 0;
     }
 
-    //check if the body size including offest excceeds the actual LEDs: (choose the smaller one)
+    //check if the body size including offset exceeds the actual LEDs: (choose the smaller one)
     int lastLED = ((frame.body_size / 3) + frame.offset) > ledCount ? ledCount - frame.offset : (frame.body_size / 3);
     //convert the body to color values and apply them to the leds 
     for(int i = 0; i < lastLED; i++)
