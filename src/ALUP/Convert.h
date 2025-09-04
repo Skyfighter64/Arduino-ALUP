@@ -32,6 +32,22 @@ class Convert
             
             return 4;
         }
+        
+        /**
+         * function converting an unsigned 32bit integer to an array of 4 bytes
+         * @param number: the number which should be converted
+         * @param outBytes: a pointer to the byte array where the result will be stored; has to have a size of 4
+         * @return: an integer representing the length of the outBytes array
+         */
+        static int UInt32ToBytes(uint32_t number, byte * outBytes)
+        {
+            outBytes[0] = (number >> 24) & 0xFF;
+            outBytes[1] = (number >> 16) & 0xFF;
+            outBytes[2] = (number >> 8) & 0xFF;
+            outBytes[3] = number & 0xFF;
+            
+            return 4;
+        }
 
         /**
         *function converting 4 bytes to a 32 bit integer

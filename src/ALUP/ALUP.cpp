@@ -210,13 +210,12 @@ void Alup::SendByte(byte b)
 }
 
 
-
-
 void Alup::Disconnect()
 {
     connection->Disconnect();
     connected = false;
 }
+
 
 void Alup::Run()
 {
@@ -250,12 +249,11 @@ void Alup::Run()
     else if (result == 1)
     {
         //frame applied successfully
-        //acknowledge frame
-        SendByte(FRAME_ACKNOWLEDGEMENT_BYTE);
+        SendAcknowledgement();
     } 
       
-    
 }
+
 
 /**
  * function reading in a complete frame as defined in ALUP v.0.2
@@ -274,11 +272,15 @@ Frame Alup::ReadFrame()
     if(frame.body == nullptr)
     {
       //Not enough memory left for the incoming frame body
+      //TODO: maybe discard frame? / return frame error to sender?
       delay(500);
     }
     connection->Read(frame.body, frame.body_size);
+    //save the receiving timestamp
+    this->t_in = millis();
     return frame;
 }
+
 
 /**
  * function applying the given frame by executing its command
@@ -353,6 +355,43 @@ int Alup::ApplyFrame(Frame frame)
 
     FastLED.show();
     return 1;
+ }
+
+ /**
+  * Send an acknowledgement consisting of an
+  * acknowledgement byte and time stamps for time synchronization
+  */
+ void Alup::SendAcknowledgement()
+ {
+    // save outgoing timestamp
+    this->t_out = millis();
+  
+    // allocate temporary buffers
+    byte* t_in_bytes = (byte*) malloc(sizeof(uint32_t));
+    byte* t_out_bytes = (byte*) malloc(sizeof(uint32_t));
+
+    //convert the timestamps to bytes
+    Convert::UInt32ToBytes(t_in, t_in_bytes);
+    Convert::UInt32ToBytes(t_out, t_out_bytes);
+
+    // built the acknowledgement package
+    size_t bufferSize = 1 + 2*sizeof(uint32_t);
+    byte* buffer = (byte*) malloc(bufferSize);
+    buffer[0] = FRAME_ACKNOWLEDGEMENT_BYTE;
+
+    int offset = 1;
+    //copy the incoming timestamp
+    memcpy( &buffer[offset], &t_in_bytes[0], 4);
+    offset += 4;
+    //copy the outgoing timestamp
+    memcpy( &buffer[offset], &t_out_bytes[0], 4);
+    //send acknowledgement
+    connection->Send(buffer, bufferSize);
+
+    // free temporary buffers
+    free(t_in_bytes);
+    free(t_out_bytes);
+    free(buffer);
  }
 
 
