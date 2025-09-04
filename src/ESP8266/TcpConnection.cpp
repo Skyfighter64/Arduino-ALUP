@@ -25,6 +25,7 @@ void TcpConnection::Connect()
     ConnectToWifi(wifiSSID, wifiPassword);
     //start the TCP listener
     WiFiServer server(receivingPort);
+    server.setNoDelay(true);
     server.begin();
 
     Serial.println("Waiting for TCP connection");
@@ -37,6 +38,7 @@ void TcpConnection::Connect()
         delay(100);
 
         tcp = server.accept();
+        tcp.setNoDelay(true);
     }
     connected = true;
     Serial.println("TCP Connected");
@@ -54,7 +56,7 @@ void TcpConnection::ConnectToWifi(char* _ssid, char* _password)
     WiFi.mode(WIFI_STA);
     WiFi.begin(_ssid, _password);
 
-    Serial.print("Connecting to wifi: ");
+    Serial.print("\nConnecting to wifi: ");
     Serial.println(_ssid);
     
     //wait until the connection is established 
