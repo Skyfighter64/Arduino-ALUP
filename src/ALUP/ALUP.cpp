@@ -300,7 +300,8 @@ int Alup::ApplyFrame(Frame frame)
 
         case Command::DISCONNECT: 
             //acknowledge the disconnect
-            SendByte(FRAME_ACKNOWLEDGEMENT_BYTE);
+            //SendByte(FRAME_ACKNOWLEDGEMENT_BYTE);
+            SendAcknowledgement();
             delay(100);
             //disconnect from the remote device
             Disconnect();
