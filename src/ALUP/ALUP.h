@@ -33,7 +33,6 @@ class Alup
         int dataPin;
         int clockPin;
         
-        
 
         uint8_t ReadByte();
         void SendByte(uint8_t byte);
@@ -44,9 +43,10 @@ class Alup
         Frame ReadFrame();
         int ApplyFrame(Frame frame);
         int ApplyColors(Frame frame);
-        void Alup::SendAcknowledgement();
+        void SendAcknowledgement();
         int32_t ReadInt32();
 
+        
     private:
     // incoming and outgoing timestamps of the current packet
     uint32_t t_in;
