@@ -42,7 +42,7 @@ class Convert
         {
             int32_t number = 0;
 
-            //shift each byte to its correspondig position and add it to the number
+            //shift each byte to its corresponding position and add it to the number
             number += (int32_t) bytes[0] << 24;
             number += (int32_t) bytes[1] << 16;
             number += (int32_t) bytes[2] << 8;
