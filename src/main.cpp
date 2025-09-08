@@ -4,14 +4,14 @@
 // choose the connection type
 //#include "ESP32/UdpConnection.h"
 #include "ESP8266/TcpConnection.h"
-#include "ALUP/SerialConnection.h"
+//#include "ALUP/SerialConnection.h"
 
 #include "ALUP/ALUP.h"
 
 #include "WiFi_Credentials.h"
 
 #define NUM_LEDS 100
-#define DATA_PIN 2
+#define DATA_PIN 16
 #define CLOCK_PIN 4
 
 CRGB leds[NUM_LEDS];
@@ -35,7 +35,7 @@ void loop()
     {
       //try to connect/reconnect
       delay(1000);
-      alup.Connect(&connection, "Test", "Extra values");
+      alup.Connect(&connection, "D1 Mini", "LEDs: WS2812b");
       
     }
     //run the ALUP main loop

@@ -45,6 +45,7 @@ class Alup
         int ApplyColors(Frame frame);
         void SendAcknowledgement();
         int32_t ReadInt32();
+        int32_t ReadUInt32();
 
         
     private:

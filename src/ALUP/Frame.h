@@ -14,6 +14,8 @@ class Frame
       int32_t body_size;
       //the offset of the first body value
       int32_t offset;
+      // the time at which the frame will be applied
+      uint32_t timestamp;
       //the command byte
       uint8_t command;
       //leftover byte, reserved for future use

@@ -265,6 +265,7 @@ Frame Alup::ReadFrame()
     Frame frame = Frame();
     frame.body_size = ReadInt32();
     frame.offset = ReadInt32();
+    frame.timestamp = ReadUInt32();
     frame.command = ReadByte();
     frame.unused = ReadByte();
 
@@ -406,6 +407,18 @@ int Alup::ApplyFrame(Frame frame)
      byte buffer[4];
      connection->Read(buffer, 4);
      return Convert::BytesToInt32(buffer);
+ }
+
+ /**
+ * function reading in a 32bit unsigned integer from the connection
+ * Note: blocks until the integer was read
+ * @return: the read integer
+ */
+ int32_t Alup::ReadUInt32()
+ {
+     byte buffer[4];
+     connection->Read(buffer, 4);
+     return Convert::BytesToUInt32(buffer);
  }
 
 
