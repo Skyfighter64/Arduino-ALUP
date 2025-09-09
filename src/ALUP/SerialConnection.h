@@ -68,6 +68,7 @@ public:
             while(Available() < 1)
             {
                 //wait for data
+                yield();
             } 
             //read the next byte from the serial connection
             Serial.readBytes(temp, 1);
