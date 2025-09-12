@@ -293,7 +293,7 @@ int Alup::ApplyFrame(Frame frame)
     // wait until the time stamp of the frame has been reached
     // TRICK: do subtraction to account for overflow of millis() after ~50 days
     // NOTE: this limits the maximum timestamp to be < ~25 days in the future
-    while ((millis() - frame.timestamp) < 0)
+    while ((int32_t)(millis() - frame.timestamp) < 0)
     {
         /* do nothing */
         yield();
