@@ -6,7 +6,7 @@
 // Note: this is device-specific and needs to be measured manually
 // using one of the test scripts
 // Default: 1
-#define TIME_DRIFT_CORRECTION 0.9991118335086006
+#define TIME_DRIFT_CORRECTION 1
 
 /**
  * Class containing Arduino timing functions with drift correction
