@@ -1,5 +1,6 @@
 #include "ALUP.h"
 #include "Convert.h"
+#include "Timer.h"
 
 /**
  * default constructor
@@ -278,7 +279,7 @@ Frame Alup::ReadFrame()
     }
     connection->Read(frame.body, frame.body_size);
     //save the receiving timestamp
-    this->t_in = millis();
+    this->t_in = Timer::millis();
     return frame;
 }
 
@@ -293,7 +294,7 @@ int Alup::ApplyFrame(Frame frame)
     // wait until the time stamp of the frame has been reached
     // TRICK: do subtraction to account for overflow of millis() after ~50 days
     // NOTE: this limits the maximum timestamp to be < ~25 days in the future
-    while ((int32_t)(millis() - frame.timestamp) < 0)
+    while ((int32_t)(Timer::millis() - frame.timestamp) < 0)
     {
         /* do nothing */
         yield();
@@ -375,7 +376,7 @@ int Alup::ApplyFrame(Frame frame)
  void Alup::SendAcknowledgement()
  {
     // save outgoing timestamp
-    this->t_out = millis();
+    this->t_out = Timer::millis();
   
     // allocate temporary buffers
     byte* t_in_bytes = (byte*) malloc(sizeof(uint32_t));
