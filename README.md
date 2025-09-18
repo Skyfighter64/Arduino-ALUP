@@ -344,6 +344,10 @@ The value entered after the 'case' represents the ID of your Subprogram. You wil
 3. To execute your subprogram, send a frame using the ID to the microcontroller. For more information on how to execute subprograms, see the documentation of the used master device implementation.
 
 
+## Time Drift Correction
+
+To correct the constant drift of the internal clock, measure the drift correction factor over multiple hours (eg. using the test script from ALUP-Controller) and enter it in `ALUP/Time.h` for `TIME_CORRECTION_FACTOR`
+
 ## Usage
 
 Connect the microcontroller to the PC using a USB cable.
