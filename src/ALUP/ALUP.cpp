@@ -229,8 +229,8 @@ void Alup::Run()
     // read in the next incoming frame if the buffer has space left
     if (!this->frameBuffer.IsFull() && this->connection->Available() > 0)
     {
-        Frame frame = ReadFrame();
-        this->frameBuffer.Append(&frame);
+        Frame* frame_ptr = ReadFrame();
+        this->frameBuffer.Append(frame_ptr);
     }
 
     // check if there is a frame in the buffer
@@ -268,6 +268,7 @@ void Alup::Run()
  */
 Frame* Alup::ReadFrame()
 {
+    // create new frame object
     Frame* frame_ptr = new Frame();
     frame_ptr->body_size = ReadInt32();
     frame_ptr->offset = ReadInt32();
