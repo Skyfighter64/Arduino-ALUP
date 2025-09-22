@@ -226,27 +226,33 @@ void Alup::Run()
         return;
     }
 
-    //read in the frame
-    Frame frame = ReadFrame();
+    // check beforehand if space is left in buffer
+    // NOTE: blocking could lead to problems here (?)
 
-    //apply the frame to the leds
-    int result = ApplyFrame(frame);
-    
-    //free the ressources allocated in ReadFrame()
-    free(frame.body);
-    
-    if(result == 0)
+    if (!this->frameBuffer.IsFull() && this->connection->Available() > 0)
     {
-        //A frame error occurred
-        //frame could not be applied
-        //flush all data
-        while(connection->Available() > 0 )
-        {
+        //read in the frame
+        Frame frame = ReadFrame();
+        this->frameBuffer.Append(&frame);
+    }
+
+    // get frame (ptr) to the current frame
+    Frame* frame_ptr = this->frameBuffer.Peek();
+
+
+    // apply frame if the time stamp of the frame has been reached
+    // TRICK: do subtraction to account for overflow of millis() after ~50 days
+    // NOTE: this limits the maximum timestamp to be < ~25 days in the future or past
+    if((int32_t)(Timer::millis() - frame_ptr->timestamp) >= 0)
+    {
         //apply the frame to the leds
         int result = ApplyFrame(*frame_ptr);
         ReplyToSender(result);
-    } 
-      
+
+        //remove frame from buffer and free the ressources
+        this->frameBuffer.Pop();
+    }
+
 }
 
 
@@ -255,9 +261,9 @@ void Alup::Run()
  * Note: this function blocks until a frame is received
  * @return frame: the received frame
  */
-Frame Alup::ReadFrame()
+Frame& Alup::ReadFrame()
 {
-    Frame frame = Frame();
+    Frame frame = Frame(); //TODO: use new here to create new frame; delete when sending ack
     frame.body_size = ReadInt32();
     frame.offset = ReadInt32();
     frame.timestamp = ReadUInt32();
@@ -283,17 +289,8 @@ Frame Alup::ReadFrame()
  * @param frame: the frame to apply
  * @return: 1 if applied successfully, 0 if frame error occurred, -1 if no acknowledgement should be sent
  */
-int Alup::ApplyFrame(Frame frame)
+int Alup::ApplyFrame(Frame &frame)
 {
-    // wait until the time stamp of the frame has been reached
-    // TRICK: do subtraction to account for overflow of millis() after ~50 days
-    // NOTE: this limits the maximum timestamp to be < ~25 days in the future
-    while ((int32_t)(Timer::millis() - frame.timestamp) < 0)
-    {
-        /* do nothing */
-        yield();
-    }
-    
     switch(frame.command)
     {
         case Command::NONE:
@@ -305,7 +302,6 @@ int Alup::ApplyFrame(Frame frame)
 
         case Command::DISCONNECT: 
             //acknowledge the disconnect
-            //SendByte(FRAME_ACKNOWLEDGEMENT_BYTE);
             SendAcknowledgement();
             delay(100);
             //disconnect from the remote device
@@ -320,7 +316,6 @@ int Alup::ApplyFrame(Frame frame)
         default:
             //invalid command received
             delay(1000);
-            
             return 0;
     }
 }
@@ -331,7 +326,7 @@ int Alup::ApplyFrame(Frame frame)
  * @param frame: the frame of which the body will be applied
  * @return: 1 if applied successfully, else 0
  */
- int Alup::ApplyColors(Frame frame)
+ int Alup::ApplyColors(Frame &frame)
  {
     //check if the frame offset is valid
     if (frame.offset >= ledCount)

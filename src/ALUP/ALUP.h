@@ -44,9 +44,9 @@ class Alup
         void Blink(int pin, int count, int blinkDelay);
         int SendConfiguration(String deviceName, int dataPin, int clockPin, int ledCount, String extraValues);
         int BuildConfiguration(byte*& buffer, String protocolVersion, String deviceName, int32_t dataPin, int32_t clockPin, int32_t ledCount, String extraValues);
-        Frame ReadFrame();
-        int ApplyFrame(Frame frame);
-        int ApplyColors(Frame frame);
+        Frame& ReadFrame();
+        int ApplyFrame(Frame &frame);
+        int ApplyColors(Frame &frame);
         void ReplyToSender(int result);
         void SendAcknowledgement();
         int32_t ReadInt32();
