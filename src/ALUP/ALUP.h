@@ -11,9 +11,11 @@
 #define FRAME_ERROR_BYTE 249
 
 #define PROTOCOL_VERSION "0.2"
+#define FRAME_BUFFER_SIZE 2
 
 #include "Connection.h"
 #include "Frame.h"
+#include "CyclicBuffer.h"
 #include <FastLED.h>
 
 class Alup
@@ -32,6 +34,8 @@ class Alup
         int ledCount;
         int dataPin;
         int clockPin;
+
+        CyclicBuffer<Frame, FRAME_BUFFER_SIZE> frameBuffer;
         
 
         uint8_t ReadByte();
