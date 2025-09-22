@@ -226,17 +226,21 @@ void Alup::Run()
         return;
     }
 
-    // check beforehand if space is left in buffer
-    // NOTE: blocking could lead to problems here (?)
-
+    // read in the next incoming frame if the buffer has space left
     if (!this->frameBuffer.IsFull() && this->connection->Available() > 0)
     {
-        //read in the frame
         Frame frame = ReadFrame();
         this->frameBuffer.Append(&frame);
     }
 
-    // get frame (ptr) to the current frame
+    // check if there is a frame in the buffer
+    if(this->frameBuffer.Items() == 0)
+    {
+        // buffer is empty, do nothing
+        return;
+    }
+
+    // get ptr for the the oldest buffered frame
     Frame* frame_ptr = this->frameBuffer.Peek();
 
 
@@ -251,6 +255,7 @@ void Alup::Run()
 
         //remove frame from buffer and free the ressources
         this->frameBuffer.Pop();
+        delete frame_ptr;
     }
 
 }
@@ -261,26 +266,26 @@ void Alup::Run()
  * Note: this function blocks until a frame is received
  * @return frame: the received frame
  */
-Frame& Alup::ReadFrame()
+Frame* Alup::ReadFrame()
 {
-    Frame frame = Frame(); //TODO: use new here to create new frame; delete when sending ack
-    frame.body_size = ReadInt32();
-    frame.offset = ReadInt32();
-    frame.timestamp = ReadUInt32();
-    frame.command = ReadByte();
-    frame.unused = ReadByte();
+    Frame* frame_ptr = new Frame();
+    frame_ptr->body_size = ReadInt32();
+    frame_ptr->offset = ReadInt32();
+    frame_ptr->timestamp = ReadUInt32();
+    frame_ptr->command = ReadByte();
+    frame_ptr->unused = ReadByte();
 
-    frame.body = (byte*) malloc(sizeof(byte)* frame.body_size);
-    if(frame.body == nullptr)
+    frame_ptr->body = (byte*) malloc(sizeof(byte)* frame_ptr->body_size);
+    if(frame_ptr->body == nullptr)
     {
       //Not enough memory left for the incoming frame body
       //TODO: maybe discard frame? / return frame error to sender?
       delay(500);
     }
-    connection->Read(frame.body, frame.body_size);
+    connection->Read(frame_ptr->body, frame_ptr->body_size);
     //save the receiving timestamp
     this->t_in = Timer::millis();
-    return frame;
+    return frame_ptr;
 }
 
 

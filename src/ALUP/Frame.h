@@ -20,6 +20,13 @@ class Frame
       uint8_t command;
       //leftover byte, reserved for future use
       uint8_t unused;
+
+    ~Frame()
+    {
+      // delete the frame's body which was allocated
+      // when reading it in
+      free(this->body);
+    }
         
 };
 enum Command
