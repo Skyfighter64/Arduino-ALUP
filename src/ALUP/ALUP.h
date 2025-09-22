@@ -47,6 +47,7 @@ class Alup
         Frame ReadFrame();
         int ApplyFrame(Frame frame);
         int ApplyColors(Frame frame);
+        void ReplyToSender(int result);
         void SendAcknowledgement();
         int32_t ReadInt32();
         int32_t ReadUInt32();

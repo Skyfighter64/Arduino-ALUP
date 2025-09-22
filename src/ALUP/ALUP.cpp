@@ -242,15 +242,9 @@ void Alup::Run()
         //flush all data
         while(connection->Available() > 0 )
         {
-          ReadByte();
-        }
-        //answer with frame error
-        SendByte(FRAME_ERROR_BYTE);
-    }
-    else if (result == 1)
-    {
-        //frame applied successfully
-        SendAcknowledgement();
+        //apply the frame to the leds
+        int result = ApplyFrame(*frame_ptr);
+        ReplyToSender(result);
     } 
       
 }
@@ -367,6 +361,31 @@ int Alup::ApplyFrame(Frame frame)
 
     FastLED.show();
     return 1;
+ }
+
+ /**
+  * Reply to the sender with an answer corresponding to the given result
+  * from ApplyFrame()
+  */
+ void Alup::ReplyToSender(int result)
+ {
+     if(result == 0)
+    {
+        //A frame error occurred
+        //frame could not be applied
+        //flush all data
+        while(connection->Available() > 0 )
+        {
+          ReadByte();
+        }
+        //answer with frame error
+        SendByte(FRAME_ERROR_BYTE);
+    }
+    else if (result == 1)
+    {
+        //frame applied successfully
+        SendAcknowledgement();
+    } 
  }
 
  /**
