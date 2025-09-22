@@ -58,6 +58,11 @@ public:
      */
     T* Peek()
     {
+        // check if there is an item in the buffer
+        if(this->items == 0)
+        {
+            return nullptr;
+        }
         return this->buffer[this->tail];  
     }
 
