@@ -85,7 +85,18 @@ class Convert
             return number;
         }
 
-        
+        /**
+        * function converting an unsigned 8bit integer to an array of 1 byte
+        * @param number: the number which should be converted
+        * @param outBytes: a pointer to the byte array where the result will be stored; has to have a size of 1
+        * @return: an integer representing the length of the outBytes array
+        */
+        static uint8_t UInt8ToBytes(uint8_t number, byte * outBytes)
+        {
+            outBytes[0] = number;
+
+            return 1;
+        }
 
 
 };

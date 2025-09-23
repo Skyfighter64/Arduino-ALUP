@@ -19,9 +19,6 @@ Alup::Alup(CRGB* _leds, int _ledCount, int _dataPin, int _clockPin) : leds {_led
  * function establishing an ALUP connection
  * @param _connection: a connection object to use for the protocol
  * @param deviceName: a name for this device
- * @param dataPin: the data Pin of the LED strip; 0 if not used
- * @param clockPin: the clock pin of the LED strip; 0 if not used
- * @param ledCount: the number of LEDs on the led strip
  * @param extraValues: additional configuration values to send, "" if not used
  * @return: 1 if connected successfully, else 0
  */
@@ -86,7 +83,7 @@ int Alup::SendConfiguration(String deviceName, int dataPin, int clockPin, int le
 {
     //build the configuration
     byte* buff;
-    int length = BuildConfiguration(buff, PROTOCOL_VERSION, deviceName, dataPin, clockPin, ledCount, extraValues);
+    int length = BuildConfiguration(buff, PROTOCOL_VERSION, deviceName, ledCount, FRAME_BUFFER_SIZE, dataPin, clockPin, extraValues);
    
     //send the configuration
     connection->Send(buff, length);
@@ -117,13 +114,14 @@ int Alup::SendConfiguration(String deviceName, int dataPin, int clockPin, int le
  * @param buffer: the buffer in which the result will be stored. Has to be free()'d!!
  * @param protocolVersion: the protocol version of this implementation. Usually PROTOCOL_VERSION
  * @param deviceName: a name for this device
+ * @param ledCount: the number of LEDs on the led strip
+ * @param frameBufferSize: the number of frames the frame buffer can hold
  * @param dataPin: the data Pin of the LED strip; 0 if not used
  * @param clockPin: the clock pin of the LED strip; 0 if not used
- * @param ledCount: the number of LEDs on the led strip
  * @param extraValues: additional configuration values to send, "" if not used
  * @return: the size of the buffer
  */
-int Alup::BuildConfiguration(byte*& buffer, String protocolVersion, String deviceName, int32_t dataPin, int32_t clockPin, int32_t ledCount, String extraValues)
+int Alup::BuildConfiguration(byte*& buffer, String protocolVersion, String deviceName, int32_t ledCount, uint8_t frameBufferSize, int32_t dataPin, int32_t clockPin, String extraValues)
 {
     //convert the protocol version into a null terminated byte array
     int versionLength = protocolVersion.length() + 1;
@@ -142,16 +140,19 @@ int Alup::BuildConfiguration(byte*& buffer, String protocolVersion, String devic
 
 
     // convert the integer values to bytes
+    byte ledCountBytes[4];
+    Convert::Int32ToBytes(ledCount, ledCountBytes);
+    byte frameBufferSizeBytes[1];
+    Convert::UInt8ToBytes(frameBufferSize, frameBufferSizeBytes);
     byte dataPinBytes[4];
     Convert::Int32ToBytes(dataPin, dataPinBytes);
     byte clockPinBytes[4];
     Convert::Int32ToBytes(clockPin, clockPinBytes);
-    byte ledCountBytes[4];
-    Convert::Int32ToBytes(ledCount, ledCountBytes);
+
 
     //calculate the buffer size
     //add one byte for the configuration start
-    int bufferSize = 1 + versionLength + nameLength + extraValuesLength + sizeof(int32_t) * 3;
+    int bufferSize = 1 + versionLength + nameLength + extraValuesLength + sizeof(uint8_t) + sizeof(int32_t) * 3;
     //allocate the main buffer
     buffer = (byte*) malloc(bufferSize);
     buffer[0] = CONFIGURATION_START_BYTE;
@@ -168,6 +169,9 @@ int Alup::BuildConfiguration(byte*& buffer, String protocolVersion, String devic
     //copy the data pin
     memcpy( &buffer[offset], &ledCountBytes[0], 4);
     offset += 4;
+    //copy the frame buffer size
+    memcpy( &buffer[offset], &frameBufferSizeBytes[0], 1);
+    offset += 1;
     //copy the clock pin
     memcpy( &buffer[offset], &dataPinBytes[0], 4);
     offset += 4;
