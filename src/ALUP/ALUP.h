@@ -47,16 +47,10 @@ class Alup
         Frame* ReadFrame();
         int ApplyFrame(Frame &frame);
         int ApplyColors(Frame &frame);
-        void ReplyToSender(int result);
-        void SendAcknowledgement();
+        void ReplyToSender(Frame &frame, int result);
+        void SendAcknowledgement(Frame &frame);
         int32_t ReadInt32();
         int32_t ReadUInt32();
-
-        
-    private:
-    // incoming and outgoing timestamps of the current packet
-    uint32_t t_in;
-    uint32_t t_out;
         
 };
 

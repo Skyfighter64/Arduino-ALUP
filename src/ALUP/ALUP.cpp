@@ -257,7 +257,7 @@ void Alup::Run()
     {
         //apply the frame to the leds
         int result = ApplyFrame(*frame_ptr);
-        ReplyToSender(result);
+        ReplyToSender(*frame_ptr, result);
 
         //remove frame from buffer and free the ressources
         this->frameBuffer.Pop();
@@ -291,7 +291,7 @@ Frame* Alup::ReadFrame()
     }
     connection->Read(frame_ptr->body, frame_ptr->body_size);
     //save the receiving timestamp
-    this->t_in = Timer::millis();
+    frame_ptr->t_in = Timer::millis();
     return frame_ptr;
 }
 
@@ -373,8 +373,9 @@ int Alup::ApplyFrame(Frame &frame)
  /**
   * Reply to the sender with an answer corresponding to the given result
   * from ApplyFrame()
+  * @param frame: A pointer to the frame to which will be replied
   */
- void Alup::ReplyToSender(int result)
+ void Alup::ReplyToSender(Frame  &frame, int result)
  {
      if(result == 0)
     {
@@ -391,26 +392,27 @@ int Alup::ApplyFrame(Frame &frame)
     else if (result == 1)
     {
         //frame applied successfully
-        SendAcknowledgement();
+        SendAcknowledgement(frame);
     } 
  }
 
  /**
   * Send an acknowledgement consisting of an
   * acknowledgement byte and time stamps for time synchronization
+  * @param frame_ptr: A pointer to the frame which should be acknowledged
   */
- void Alup::SendAcknowledgement()
+ void Alup::SendAcknowledgement(Frame &frame)
  {
     // save outgoing timestamp
-    this->t_out = Timer::millis();
+    frame.t_out = Timer::millis();
   
     // allocate temporary buffers
     byte* t_in_bytes = (byte*) malloc(sizeof(uint32_t));
     byte* t_out_bytes = (byte*) malloc(sizeof(uint32_t));
 
     //convert the timestamps to bytes
-    Convert::UInt32ToBytes(t_in, t_in_bytes);
-    Convert::UInt32ToBytes(t_out, t_out_bytes);
+    Convert::UInt32ToBytes(frame.t_in, t_in_bytes);
+    Convert::UInt32ToBytes(frame.t_out, t_out_bytes);
 
     // built the acknowledgement package
     size_t bufferSize = 1 + 2*sizeof(uint32_t);

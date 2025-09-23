@@ -21,13 +21,18 @@ class Frame
       //leftover byte, reserved for future use
       uint8_t unused;
 
+      // incoming and outgoing timestamps of this frame
+      // in ms, local system time
+      uint32_t t_in;
+      uint32_t t_out;
+
     ~Frame()
     {
       // delete the frame's body which was allocated
       // when reading it in
       free(this->body);
     }
-        
+    
 };
 enum Command
 {
