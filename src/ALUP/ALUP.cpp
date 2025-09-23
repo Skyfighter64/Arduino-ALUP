@@ -249,9 +249,11 @@ void Alup::Run()
 
 
     // apply frame if the time stamp of the frame has been reached
+    // or the timestamp is 0
     // TRICK: do subtraction to account for overflow of millis() after ~50 days
     // NOTE: this limits the maximum timestamp to be < ~25 days in the future or past
-    if((int32_t)(Timer::millis() - frame_ptr->timestamp) >= 0)
+    // NOTE: We need to handle the 0-Case separately because of possible timesync inaccuracy + overflow
+    if(frame_ptr->timestamp == 0 || (int32_t)(Timer::millis() - frame_ptr->timestamp) >= 0)
     {
         //apply the frame to the leds
         int result = ApplyFrame(*frame_ptr);
