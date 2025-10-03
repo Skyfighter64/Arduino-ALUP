@@ -387,7 +387,7 @@ int Alup::ApplyFrame(Frame &frame)
           ReadByte();
         }
         //answer with frame error
-        SendByte(FRAME_ERROR_BYTE);
+        SendFrameError(frame, 0);
     }
     else if (result == 1)
     {
@@ -399,14 +399,19 @@ int Alup::ApplyFrame(Frame &frame)
  /**
   * Send an acknowledgement consisting of an
   * acknowledgement byte and time stamps for time synchronization
-  * @param frame_ptr: A pointer to the frame which should be acknowledged
+  * @param frame: The frame which should be acknowledged
   */
  void Alup::SendAcknowledgement(Frame &frame)
  {
     // save outgoing timestamp
     frame.t_out = Timer::millis();
+
+    // convert the id to bytes
+    byte idBytes[1];
+    Convert::UInt8ToBytes(frame.id, idBytes);
   
     // allocate temporary buffers
+    // TODO: why can't we allocate this statically 
     byte* t_in_bytes = (byte*) malloc(sizeof(uint32_t));
     byte* t_out_bytes = (byte*) malloc(sizeof(uint32_t));
 
@@ -415,11 +420,14 @@ int Alup::ApplyFrame(Frame &frame)
     Convert::UInt32ToBytes(frame.t_out, t_out_bytes);
 
     // built the acknowledgement package
-    size_t bufferSize = 1 + 2*sizeof(uint32_t);
+    size_t bufferSize = 1 + sizeof(uint8_t) +  2*sizeof(uint32_t);
     byte* buffer = (byte*) malloc(bufferSize);
     buffer[0] = FRAME_ACKNOWLEDGEMENT_BYTE;
 
     int offset = 1;
+    //copy the id
+    memcpy( &buffer[offset], &idBytes[0], 1);
+    offset += 1;
     //copy the incoming timestamp
     memcpy( &buffer[offset], &t_in_bytes[0], 4);
     offset += 4;
@@ -431,6 +439,41 @@ int Alup::ApplyFrame(Frame &frame)
     // free temporary buffers
     free(t_in_bytes);
     free(t_out_bytes);
+    free(buffer);
+ }
+
+ /**
+  * Send a frame error with the specified error code for the given frame
+  * @param frame: The frame to which the error corresponds
+  * @param error_code: The error code to send. TODO: define error codes
+  */
+ void Alup::SendFrameError(Frame &frame, uint8_t error_code)
+ {
+    // convert the id to bytes
+    byte idBytes[1];
+    Convert::UInt8ToBytes(frame.id, idBytes);
+
+    // convert the error code to bytes
+    byte error_code_bytes[1];
+    Convert::UInt8ToBytes(error_code, error_code_bytes);
+
+
+    // built the acknowledgement package
+    size_t bufferSize = 1 + 2*sizeof(uint8_t);
+    byte* buffer = (byte*) malloc(bufferSize);
+    buffer[0] = FRAME_ERROR_BYTE;
+
+    int offset = 1;
+    //copy the id
+    memcpy( &buffer[offset], &idBytes[0], 1);
+    offset += 1;
+    // copy the error code
+    memcpy( &buffer[offset], &error_code_bytes[0], 1);
+
+    //send frame error
+    connection->Send(buffer, bufferSize);
+
+    // free temporary buffer
     free(buffer);
  }
 
