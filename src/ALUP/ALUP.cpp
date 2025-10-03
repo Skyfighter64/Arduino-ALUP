@@ -276,11 +276,11 @@ Frame* Alup::ReadFrame()
 {
     // create new frame object
     Frame* frame_ptr = new Frame();
+    frame_ptr->id = ReadByte();
+    frame_ptr->command = ReadByte();
     frame_ptr->body_size = ReadInt32();
     frame_ptr->offset = ReadInt32();
     frame_ptr->timestamp = ReadUInt32();
-    frame_ptr->command = ReadByte();
-    frame_ptr->unused = ReadByte();
 
     frame_ptr->body = (byte*) malloc(sizeof(byte)* frame_ptr->body_size);
     if(frame_ptr->body == nullptr)
@@ -314,7 +314,7 @@ int Alup::ApplyFrame(Frame &frame)
 
         case Command::DISCONNECT: 
             //acknowledge the disconnect
-            SendAcknowledgement();
+            SendAcknowledgement(frame);
             delay(100);
             //disconnect from the remote device
             Disconnect();

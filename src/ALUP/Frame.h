@@ -18,8 +18,8 @@ class Frame
       uint32_t timestamp;
       //the command byte
       uint8_t command;
-      //leftover byte, reserved for future use
-      uint8_t unused;
+      // frame id to associate frame with its acknowledgement
+      uint8_t id;
 
       // incoming and outgoing timestamps of this frame
       // in ms, local system time

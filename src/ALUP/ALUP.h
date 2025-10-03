@@ -10,8 +10,8 @@
 #define FRAME_ACKNOWLEDGEMENT_BYTE 250
 #define FRAME_ERROR_BYTE 249
 
-#define PROTOCOL_VERSION "0.2.1"
-#define FRAME_BUFFER_SIZE 2
+#define PROTOCOL_VERSION "0.2.2"
+#define FRAME_BUFFER_SIZE 5
 
 #include "Connection.h"
 #include "Frame.h"
