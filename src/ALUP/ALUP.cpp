@@ -234,7 +234,10 @@ void Alup::Run()
     if (!this->frameBuffer.IsFull() && this->connection->Available() > 0)
     {
         Frame* frame_ptr = ReadFrame();
+        if (frame_ptr != nullptr)
+        {
         this->frameBuffer.Append(frame_ptr);
+    }
     }
 
     // check if there is a frame in the buffer
@@ -270,7 +273,7 @@ void Alup::Run()
 /**
  * function reading in a complete frame as defined in ALUP v.0.2
  * Note: this function blocks until a frame is received
- * @return frame: the received frame
+ * @return frame: the received frame or nullptr if the frame could not be read
  */
 Frame* Alup::ReadFrame()
 {
@@ -286,8 +289,15 @@ Frame* Alup::ReadFrame()
     if(frame_ptr->body == nullptr)
     {
       //Not enough memory left for the incoming frame body
-      //TODO: maybe discard frame? / return frame error to sender?
+      // discard the incoming frame
+      FlushConnection(frame_ptr->body_size);
+      Blink(LED_BUILTIN, 10, 100);
+      SendFrameError(*frame_ptr, ERROR_OUT_OF_MEMORY);
+      delete frame_ptr;
+      
       delay(500);
+
+      return nullptr;
     }
     connection->Read(frame_ptr->body, frame_ptr->body_size);
     //save the receiving timestamp
