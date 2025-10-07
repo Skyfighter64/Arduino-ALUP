@@ -50,6 +50,7 @@ class Alup
         void ReplyToSender(Frame &frame, int result);
         void SendAcknowledgement(Frame &frame);
         void SendFrameError(Frame &frame, uint8_t error_code);
+void FlushConnection(int n);
         int32_t ReadInt32();
         int32_t ReadUInt32();
         

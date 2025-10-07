@@ -482,6 +482,17 @@ int Alup::ApplyFrame(Frame &frame)
 
     //send frame error
     connection->Send(buffer, bufferSize);
+}
+
+ /**
+  * Flush n bytes from the receiving buffer
+  */
+ void Alup::FlushConnection(int n)
+ {
+    //flush all incoming data
+    for(int i = 0; i < n; i++)
+    {
+        ReadByte();
  }
  }
 
