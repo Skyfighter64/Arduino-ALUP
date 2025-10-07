@@ -236,8 +236,8 @@ void Alup::Run()
         Frame* frame_ptr = ReadFrame();
         if (frame_ptr != nullptr)
         {
-        this->frameBuffer.Append(frame_ptr);
-    }
+            this->frameBuffer.Append(frame_ptr);
+        }
     }
 
     // check if there is a frame in the buffer
@@ -296,7 +296,7 @@ Frame* Alup::ReadFrame()
       delete frame_ptr;
       
       delay(500);
-
+      
       return nullptr;
     }
     connection->Read(frame_ptr->body, frame_ptr->body_size);
@@ -309,7 +309,7 @@ Frame* Alup::ReadFrame()
 /**
  * function applying the given frame by executing its command
  * @param frame: the frame to apply
- * @return: 1 if applied successfully, 0 if frame error occurred, -1 if no acknowledgement should be sent
+ * @return: -1 if applied successfully, ALUP Error code (0-255) if a frame error occured
  */
 int Alup::ApplyFrame(Frame &frame)
 {
@@ -328,17 +328,17 @@ int Alup::ApplyFrame(Frame &frame)
             delay(100);
             //disconnect from the remote device
             Disconnect();
-            return 1;
+            return -1;
         case Command::TOGGLE_INTERNAL_LED:
             //test command for power LED
             // initialize pin2 as output first!
             digitalWrite(2, !digitalRead(2));
-            return 1;
+            return -1;
 
         default:
             //invalid command received
             delay(1000);
-            return 0;
+            return ERROR_INVALID_COMMAND;
     }
 }
 
@@ -346,7 +346,7 @@ int Alup::ApplyFrame(Frame &frame)
 /**
  * function interpreting the body of the given frame as colors and applying them to the leds
  * @param frame: the frame of which the body will be applied
- * @return: 1 if applied successfully, else 0
+ * @return: -1 if applied successfully, else 0
  */
  int Alup::ApplyColors(Frame &frame)
  {
@@ -356,7 +356,7 @@ int Alup::ApplyFrame(Frame &frame)
         // invalid offset
         //not a multiple of 3
         delay(500);
-        return 0;
+        return ERROR_INVALID_OFFSET;
     }
 
     //check the frame body size if it is a multiple of 3 
@@ -364,7 +364,7 @@ int Alup::ApplyFrame(Frame &frame)
     {
         //not a multiple of 3
         delay(500);
-        return 0;
+        return ERROR_INVALID_BODY_SIZE;
     }
 
     //check if the body size including offset exceeds the actual LEDs: (choose the smaller one)
@@ -377,33 +377,28 @@ int Alup::ApplyFrame(Frame &frame)
     }
 
     FastLED.show();
-    return 1;
+    return -1;
  }
 
  /**
   * Reply to the sender with an answer corresponding to the given result
   * from ApplyFrame()
   * @param frame: A pointer to the frame to which will be replied
+  * @param result: -1 if frame was applied successfully or an ALUP Error code (0-255)
+  * for a frame error
   */
  void Alup::ReplyToSender(Frame  &frame, int result)
  {
-     if(result == 0)
-    {
-        //A frame error occurred
-        //frame could not be applied
-        //flush all data
-        while(connection->Available() > 0 )
-        {
-          ReadByte();
-        }
-        //answer with frame error
-        SendFrameError(frame, 0);
-    }
-    else if (result == 1)
+    if (result == -1)
     {
         //frame applied successfully
         SendAcknowledgement(frame);
     } 
+    else
+    {
+        //answer with frame error and the given error code
+        SendFrameError(frame, result);
+    }
  }
 
  /**
@@ -423,7 +418,20 @@ int Alup::ApplyFrame(Frame &frame)
     // allocate temporary buffers
     // TODO: why can't we allocate this statically 
     byte* t_in_bytes = (byte*) malloc(sizeof(uint32_t));
+
+    if(t_in_bytes == nullptr)
+    {
+        // blink twice
+        Blink(LED_BUILTIN, 2, 500);
+    }
+
     byte* t_out_bytes = (byte*) malloc(sizeof(uint32_t));
+
+    if(t_out_bytes == nullptr)
+    {
+        // blink twice
+        Blink(LED_BUILTIN, 3, 500);
+    }
 
     //convert the timestamps to bytes
     Convert::UInt32ToBytes(frame.t_in, t_in_bytes);
@@ -432,6 +440,13 @@ int Alup::ApplyFrame(Frame &frame)
     // built the acknowledgement package
     size_t bufferSize = 1 + sizeof(uint8_t) +  2*sizeof(uint32_t);
     byte* buffer = (byte*) malloc(bufferSize);
+
+    if(buffer == nullptr)
+    {
+        // blink twice
+        Blink(LED_BUILTIN, 4, 500);
+    }
+
     buffer[0] = FRAME_ACKNOWLEDGEMENT_BYTE;
 
     int offset = 1;
@@ -459,6 +474,8 @@ int Alup::ApplyFrame(Frame &frame)
   */
  void Alup::SendFrameError(Frame &frame, uint8_t error_code)
  {
+    // flush all remaining incoming data
+    // TODO: do we really need to do this? or why DO we need to do this
     // convert the id to bytes
     byte idBytes[1];
     Convert::UInt8ToBytes(frame.id, idBytes);
@@ -482,7 +499,7 @@ int Alup::ApplyFrame(Frame &frame)
 
     //send frame error
     connection->Send(buffer, bufferSize);
-}
+ }
 
  /**
   * Flush n bytes from the receiving buffer
@@ -493,7 +510,7 @@ int Alup::ApplyFrame(Frame &frame)
     for(int i = 0; i < n; i++)
     {
         ReadByte();
- }
+    }
  }
 
 
