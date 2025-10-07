@@ -470,7 +470,7 @@ int Alup::ApplyFrame(Frame &frame)
 
     // built the acknowledgement package
     size_t bufferSize = 1 + 2*sizeof(uint8_t);
-    byte* buffer = (byte*) malloc(bufferSize);
+    byte buffer[3];
     buffer[0] = FRAME_ERROR_BYTE;
 
     int offset = 1;
@@ -482,9 +482,7 @@ int Alup::ApplyFrame(Frame &frame)
 
     //send frame error
     connection->Send(buffer, bufferSize);
-
-    // free temporary buffer
-    free(buffer);
+ }
  }
 
 
