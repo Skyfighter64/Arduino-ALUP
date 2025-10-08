@@ -286,7 +286,7 @@ Frame* Alup::ReadFrame()
     frame_ptr->timestamp = ReadUInt32();
 
     frame_ptr->body = (byte*) malloc(sizeof(byte)* frame_ptr->body_size);
-    if(frame_ptr->body == nullptr)
+    if(frame_ptr->body == nullptr && frame_ptr->body_size > 0)
     {
       //Not enough memory left for the incoming frame body
       // discard the incoming frame
