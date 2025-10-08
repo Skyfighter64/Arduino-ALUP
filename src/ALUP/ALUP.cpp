@@ -417,21 +417,9 @@ int Alup::ApplyFrame(Frame &frame)
   
     // allocate temporary buffers
     // TODO: why can't we allocate this statically 
-    byte* t_in_bytes = (byte*) malloc(sizeof(uint32_t));
+    byte t_in_bytes[sizeof(uint32_t)];
+    byte t_out_bytes[sizeof(uint32_t)];
 
-    if(t_in_bytes == nullptr)
-    {
-        // blink twice
-        Blink(LED_BUILTIN, 2, 500);
-    }
-
-    byte* t_out_bytes = (byte*) malloc(sizeof(uint32_t));
-
-    if(t_out_bytes == nullptr)
-    {
-        // blink twice
-        Blink(LED_BUILTIN, 3, 500);
-    }
 
     //convert the timestamps to bytes
     Convert::UInt32ToBytes(frame.t_in, t_in_bytes);
@@ -439,13 +427,7 @@ int Alup::ApplyFrame(Frame &frame)
 
     // built the acknowledgement package
     size_t bufferSize = 1 + sizeof(uint8_t) +  2*sizeof(uint32_t);
-    byte* buffer = (byte*) malloc(bufferSize);
-
-    if(buffer == nullptr)
-    {
-        // blink twice
-        Blink(LED_BUILTIN, 4, 500);
-    }
+    byte buffer[bufferSize];
 
     buffer[0] = FRAME_ACKNOWLEDGEMENT_BYTE;
 
@@ -460,11 +442,6 @@ int Alup::ApplyFrame(Frame &frame)
     memcpy( &buffer[offset], &t_out_bytes[0], 4);
     //send acknowledgement
     connection->Send(buffer, bufferSize);
-
-    // free temporary buffers
-    free(t_in_bytes);
-    free(t_out_bytes);
-    free(buffer);
  }
 
  /**
