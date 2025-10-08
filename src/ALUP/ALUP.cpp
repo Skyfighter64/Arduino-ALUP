@@ -487,7 +487,7 @@ int Alup::ApplyFrame(Frame &frame)
 
     // built the acknowledgement package
     size_t bufferSize = 1 + 2*sizeof(uint8_t);
-    byte buffer[3];
+    byte buffer[bufferSize];
     buffer[0] = FRAME_ERROR_BYTE;
 
     int offset = 1;
