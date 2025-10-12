@@ -1,5 +1,19 @@
 # Arduino-ALUP
-An ALUP implementation for Arduino and Arduino-Compatible Boards. Userd to control an individually addressable LED strip from a Computer or any other device, using a microcontroller.
+Reference Implementation for ALUP Receivers using Arduino and Arduino-Compatible Boards. 
+
+
+## What it is:
+ALUP is a protocol for communicating RGB data from a sender (eg. python program) to a receiver (Arduino/ESP) to control individually addressable LED strips.
+Stream RGB data in real-time from your PC to addressable LED strips over USB or the network.
+
+This code implements the receiver-side (Arduino/ESP/...) of the ALUP protocol which directly controls the LED strips.
+
+### Features:
+- _Real-Time_: Designed for real-time applications such as light shows, audio-visualizers, animations and more.
+- _Time-Synchronization_: Automatic synchronization of the receivers internal time on the sender side.  
+- _Time Stamps_ (optional): Specify the time at which the received colors are applied to the LEDs.
+- _Buffering_ (optional): Receive multiple frames in advance to balance out connection jitter. 
+- _Drift Correction_ (optional): Manually correct constant drift of the internal clock. 
 
 ## Table of Contents
 
@@ -18,112 +32,64 @@ This README includes the following points:
 ## Specifications
 
 ### Compatible Protocol Versions
-  * ALUP v.0.2 
+  * ALUP v.0.3 
   
-### Compatible Connection Types
-  * UDP over WiFi
+### Implemented connections
+  + TCP over WiFi 
+  * UDP over WiFi (untested with v.0.3)
   * Serial over USB
 
 ### Supported Microcontrollers:
 
-
 Microcontroller | Tested | Special instructions
 --------------- |:-----------------:| --------------------
-Ardino Uno       | :x: | 
-Arduino Nano   | :x: |
-Arduino Micro   | :x: | USB to Serial Converter needed
-ESP8266 | ? | Multiple ways of digital pin selection. See [here](https://github.com/FastLED/FastLED/wiki/ESP8266-notes "FastLED notes on ESP8266") for details
-ESP32 | :heavy_check_mark: | 
+Ardino (Uno/Nano/...)       | :heavy_check_mark: | Limited memory, use of Buffering not recommended. Inaccurate timekeeping, manual drift correction may be needed.  
+ESP8266                     | :heavy_check_mark: | Multiple ways of digital pin selection. See [here](https://github.com/FastLED/FastLED/wiki/ESP8266-notes "FastLED notes on ESP8266") for details
+ESP32                       | ? | 
 
 
-:information_source: All boards compatible with the [FastLED library] should work, but I can't test all of them.
+:information_source: All boards compatible with the Arduino Framework and the [FastLED library] should work in practice
 
 ### Supported LED strips
 
- * All individually addressable LED strips supported by the [FastLED library], including:
- 
- LED Type | Tested | Special instructions
---------------- |:-----------------:| --------------------
-APA102 | ? |
-APA104 | ? |
-DOTSTAR | ? |
-GW6205 | ? |
-GW6205_400 | ? |
-LPD8806 | ? |
-NEOPIXEL | ? |
-P9813 | ? |
-SM16716 | ? |
-TM1803 | ? |
-TM1804 | ? |
-TM1809 | ? |
-UCS1903 | ? |
-UCS1903B | ? |
-WS2801 | ? |
-WS2812 | ? |
-WS2812B | :heavy_check_mark: |
+ * All individually addressable RGB-LED strips supported by the [FastLED library].
 
-
-
-
-# TODO: Change the docs below for v.0.2
-
-
-### Protocol specific
-
-#### Timeouts
-
-Description| timeout in ms
---- | ---
-Requesting connection | 250 per try, infinite tries
-Waiting for configuration acknowledgement | 5000
-Waiting for configuration error | 5000
-
-
-#### Causes of Frame Errors
-
- * The Frame body size of a received frame is not a multiple of 3
- * The Frame `bodySize * 3` is bigger than `NUM_LEDS`
- * The Frame body size of a received frame is smaller than 0
- 
- * The Frame body offset of a received frame is smaller than 0
- * The Frame body offset of a received frame is out of range (smaller or equal to `NUM_LEDS - (bodySize / 3)` )
 
 ## Requirements
 Software:
-* [Arduino IDE](https://www.arduino.cc/en/Main/software "Download for the Arduino IDE") (preferably the latest version)
-* [FastLED library] (can be installed using the library manager, preferably the latest version)
+* Visual Studio Code with PlatformIO
+* [FastLED library] (installed via PlatformIO)
 
 
 Hardware:
-* A supported Microcontroller
-* A USB cable
-* An individually addressable LED strip supported by the [FastLED library]
+* A  microcontroller (Arduino/ESP32/D1 Mini/...)
+* A USB cable (for Serial Connection only)
+* Individually addressable LEDs
 
-:warning: You may need additional components like an external power supply depending on your used hardware.
+:warning: Additional hardware like an external power supply or controller board might be needed for more than 10 LEDs.
 
 
 
 
 ## Installation
 
-1. Download the latest version of this sketch from [here] (...) (TODO: add link to latest release)
-2. Configure it using the configuration guide below
-3. Upload it to the microcontroller
+1. Clone this repository
+2. Configure `main.cpp` (see below)
+3. Compile and upload to the microcontroller
 
 ## Configuration
 
 ### Set up the LEDs
 
-To configure the sketch for your specific LED strip, scroll down  to `SetupLEDs()` in the sketch and comment everything except the line corresponding to the type of LEDs you use.
-
-Example for WS2812B:
+To configure the sketch for your specific LED strip, set up FastLED by going to `src/main.cpp` and editing the LED type in `setup()` corresponding to your LEDs.
+Possible types from the FastLED examples:
 
 ```cpp
 
 /**
  * function setting up the leds for use with the FastLED protocol
  */
-void SetupLEDs()
+void setup()
 {
   /*
    * The setup for the connected LED strip
@@ -163,200 +129,95 @@ void SetupLEDs()
 }
 ```
 
-:information_source: If you notice that your LED strip displays the wrong colors (e.g. red instead of blue) while using, you can change the `RGB` in the uncommented line to one of `RGB`, `RBG`, `BRG`, `BGR`, `GRB` or `GBR`.
+:information_source: If the LED strip displays the wrong colors (e.g. red instead of blue) while using, try changing the `RGB` in the uncommented line to one of `RGB`, `RBG`, `BRG`, `BGR`, `GRB` or `GBR`.
 
 
 
 
-### Configuration values:
+### Configuring ALUP:
 
 This implementation has some values which have to be configured. The following tables list all of those values and explain how to set them for your hardware and use case.
 
-Name | Default value | Valid values | Description
---- | --- | --- | ---
-`NUM_LEDS` | 1 | 1 - 715827882| The number of LEDs on the connected LED strip
 
-To set the number of LEDs, simply count the LEDs on your addressable LED strip.
+#### Configuring FastLED (`main.cpp`):
+1. Set `NUM_LEDS` to the number of LEDs on the connected LED strip. 
+   Note: The maximum number of LEDs might be limited by the microcontrollers memory. Decrease if you receive memory-related errors. 
 
-:information_source: If you want to just use part of this strip, simply decrease it.
+2. Set the GPIO-Pin at which the LEDs are connected:
+  - `DATA_PIN`: the pin at which the Data-Wire is connected
+  - `CLOCK_PIN`: the pin ath which the Clock-Wire is connected (optional, ignored if not needed)
 
-:information_source: This value is limited by the amount of RAM on the microcontroller. 
+#### Configuring the connection (`main.cpp`): 
+  1. Uncomment the `#import `- Statement for your chosen connection type. If using TCP/UDP over WiFi, create a `WiFi_Credentials.h`-file inside the `src`-folder with the following contents and replace the default values with your WiFi SSID and password:
+    ```cpp
+    #ifndef WIFI_CREDENTIALS_H
+    #define WIFI_CREDENTIALS_H
 
-<br/>
+    #define SSID (char*) "my_wifi_name"
+    #define PASSWORD (char*) "my_wifi_password"
 
-Name | Default value | Valid values | Description
---- | --- | --- | ---
- `DATA_PIN` | 3 | Any valid GPIO pin| The pin on the microcontroller to which the data line of the LED strip is connected 
- 
- Set this value to the GPIO pin to which the data line of your LED strip is connected to.
- 
- 
- 
-<br/>
- 
-Name | Default value | Valid values | Description
---- | --- | --- | ---
- `CLOCK_PIN` | 4 | Any valid GPIO pin | The pin on the microcontroller to which the clock line of the LED strip is connected 
- 
- Set this value to the GPIO pin to which the clock line of your LED strip is connected to. 
+    #endif
+    ```
+    :warning: Please watch out to NOT push this file to any git-repository! 
+  2. Uncomment the statement for the used connection type.
+      eg. For Serial:
+      ```cpp
+      //UdpConnection connection = UdpConnection(SSID, PASSWORD, "192.168.178.35", 5012);
+      //TcpConnection connection = TcpConnection(SSID, PASSWORD, 5012);
+      SerialConnection connection = SerialConnection(115200);
+      ```
 
-:information_source: Some LED strips don't need a clock signal. In this case, this value will be ignored, so set it to any positive number you like.
- 
+    - *Serial:* Set the baud-rate used for communication. Has to be set to the same value on the Sender. Default: 115200
+    - *TCP:* 
+        - SSID and PASSWORD: Already configured from `WiFiCredentials.h`.
+        - Set the TCP Port. Has to be the same value on the Sender. Default 5012
+    - *UDP:* 
+        - SSID and PASSWORD are already configured from `WiFiCredentials.h`.
+        - Set the IP-Address of the Sender.
+        - Set the TCP Port. Has to be the same value on the Sender. Default 5012
 
- 
-<br/>
- 
- 
- Name | Default value | Valid values | Description
---- | --- | --- | ---
- `FRAME_DELAY` | 0 | Any positive value or 0 | The delay between the frames in ms.
- 
-This value limits the maximum refresh rate of the LED strip.
+#### Configuring ALUP (`main.cpp, loop()`):
+  - Set the values in `alup.Connect(connection, name, extra_values);` according to your liking:
+    - *connection*: No changes needed
+    - *Name:* The name of this device. Set to your liking, will be shown on the Sender.
+    - *extra values*: A string containing any text. Customize to your liking, has no specific use and can be used for anything.
 
-:information_source: Some types of LEDs may start glitching if the rate at which the microcontroller tries to change them is too high. This value is used to prevent such glitches.
+#### Time Drift Correction
 
-There are 2 ways to set it for your type of LED strip:
+To correct the constant drift of the internal clock, measure the drift correction factor over multiple hours (eg. using the test script from my ALUP-Controller repository) and enter it in `ALUP/Time.h` for `TIME_CORRECTION_FACTOR`
 
-* Calculate the delay:
+#### Buffering
 
-  Research the maximum refresh rate of your LED strip. For WS2812Bs it's 400Hz. To get the delay needed, divide 1000 by this refresh rate, and round it to the next bigger value if needed.
-  
-  For the WS2812B this would be `1000/400Hz = 2.5ms -> rounded: 3ms`.
-  
-* Try and error:
+For devices with a lot of memory (eg. ESP32) or few LEDs, frame buffering can be used to even out some fluctuations in connection latency. To do so, set `FRAME_BUFFER_SIZE` in `ALUP/ALUP.h` to the desired number of frames which should be buffered or to `1` to disable buffering.
 
-  Just try any value: If the LEDs glitch out, increase the `FRAME_DELAY` until you find a value which works
+When buffering is used, newly received Frames will immediately return an acknowledgement to the Sender, but wait in the buffer until their time stamp is reached. As soon as the time stamp is reached, they will be applied to the LED strip.
 
- 
- 
-<br/>
- 
- 
-  Name | Default value | Valid values | Description
---- | --- | --- | ---
-`BAUD` | 115200 | Depending on the microcontroller | The baud rate used for serial communication
-
-The baud rate represents the amount of bits per second transferred over the serial connection.
-
-Its maximum value depends on the used hardware. When it is too high, you may experience `Frame Errors`, but the default value should cause no problems.
-
-:warning: The baud rate set here has to be the same as the one used for the master device.
-
-:information_source: If you have many LEDs connected to the microcontroller (500 or more), you may experience a lower frame rate when using the default baud rate. In this case you can try to increase the `BAUD` value.
+Note that the frames in the buffer are not sorted by time stamps but by arrival time. If a newer Frame has an earlier timestamp than a Frame from the buffer, it will NOT be prioritized.
 
 
+## Commands
 
-<br/>
+This implementation supports the following ALUP Comamnds:
 
-  Name | Default value | Valid values | Description
---- | --- | --- | ---
-`DEVICE_NAME` | "ArduinoALUP" | Any String value | The name of this device. Set it to anything you like (multiple devices can have the same name)
+Command (Value) | Description
+-----------------------------
+NONE (0) | No command. Apply color values to the LEDs normally.
+CLEAR (1) | Set all LEDs to black. If Color values are given, they will be applied after clearing the LEDs.
+DISCONNECT (2) | Close the ALUP Connection and free resources. Makes it possible for another Sender to connect to this device
+TOGGLE_INTERNAL_LED (4) | Toggle the builtin LED of the microcontroller if present. Can be used for testing purposes.
 
-The `DEVICE_NAME` can be set to anything you'd like.
+#### Custom Commands
 
-Its use is to distinguish between different devices if multiple microcontrollers using this sketch are connected to the same computer, so try to use different names for each device you configure. 
+To create custom commands, add your custom functionalities to `src/ALUP.cpp: Alup::ApplyFrame(...)` with its corresponding ID Value (can be from 8 to 255).
 
-:warning: Note that multiple devices are allowed to have the same name, which means that this sketch won't give you an error or warning if it happens.
+If the chosen command is received from a Sender, the custom code will be executed. 
 
+Custom commands can decide on their own how the frame body is used and interpreted, there will be no other action taken. Furthermore, they should return `-1` on success and a Frame Error Code otherwise (see `ALUP.h`).
 
-<br/>
-
- Name | Default value | Valid values | Description
---- | --- | --- | ---
-`EXTRA_VALUES` | "" | Any String value | Additional configuration values
-
-This value is not required for normal use, unless the program you want to use with this sketch on your master device states otherwise.
-
-
-<br/>
-
-### Subprograms
-
-#### Specifications
-
-* Subprogram execution: Linear, before applying the LED data
-* The Protocol command offset is already applied to the ID used in `ExecuteSubCommand()`
-
-
-#### Implementation specific subprograms
-
-A list of subprograms which are already implemented.
-
-Function | ID | Description
---- | --- | ---
-`ExampleSubProgram()` | 1 | An example subprogram which lets the built in LED blink 10 times
-
-
-#### Adding your own subprograms
-
-The following guide will show you how to add your own subprograms to this sketch. If you want to learn more about subprograms and subcommands, visit the [ALUP Documentation] (...) (TODO: ad link here)
-
-1. Add your own subprogram by first creating a function containing the code you want to execute.
-
-Example:
-```cpp
-
-/**
- * an example subprogram 
- */
-void ExampleSubProgram()
-{
-  Blink(LED_BUILTIN, 10, 10);
-}
-```
-
-:warning: Subprograms are executed inside the main thread. Your subprogram can therefore have a significant impact on the LED frame rate if it is resource heavy.
-
-2. Find the function `ExecuteSubCommand()` and add your subprogram to the switch-case as described in the code:
-
-```cpp
-/**
- * function executing the given subcommand
- * @param id: the id of the command with the subcommand offset already applied according to the ALUP v. 0.1
- */
-void ExecuteSubCommand(byte id)
-{
-    //Execute a subprogram depending on the given ID
-    switch(id)
-    {
-      case 0:
-        ExampleSubProgram();
-        break;
-
-      /*
-       * add your own subprograms here by adding a new 'case' with an unused ID ranging from 0-247
-       *Example subprogram with an ID of 1:
-       *
-       *case 1:
-       *  MySubProgram();
-       *  break;
-       */
-          
-    }
-}
-
-```
-
-The value entered after the 'case' represents the ID of your Subprogram. You will need this ID to execute it later.
-
-:warning: The ID of your subprogram has to be unique and within the range of 0 - 247.
-
-3. To execute your subprogram, send a frame using the ID to the microcontroller. For more information on how to execute subprograms, see the documentation of the used master device implementation.
-
-
-## Time Drift Correction
-
-To correct the constant drift of the internal clock, measure the drift correction factor over multiple hours (eg. using the test script from ALUP-Controller) and enter it in `ALUP/Time.h` for `TIME_CORRECTION_FACTOR`
 
 ## Usage
+Use an ALUP Sender implementation (such asl Python-ALUP) to send RGB Color data, commands and more to the receiver.
 
-Connect the microcontroller to the PC using a USB cable.
-Use a program which implements the ALUP, or write your own by using one of the master device implementations (TODO: add link) to write your own program controlling the LEDs.
-
-
-## Contributing
-
-If you want to contribute to this project, please see CONTRIBUTING.md (TODO: add link)
 
 ## Credits
 
