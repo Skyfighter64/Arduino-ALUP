@@ -17,7 +17,7 @@
 #define ERROR_OUT_OF_MEMORY 3
 #define ERROR_INVALID_COMMAND 4
 
-#define PROTOCOL_VERSION "0.2.2"
+#define PROTOCOL_VERSION "0.3"
 #define FRAME_BUFFER_SIZE 1
 
 #include "Connection.h"
