@@ -35,7 +35,7 @@ void loop()
     {
       //try to connect/reconnect
       delay(1000);
-      alup.Connect(&connection, "Arduino Nano", "buffering EXPERIMENTAL, LEDs: WS2812b");
+      alup.Connect(&connection, "Arduino Nano", "LEDs: WS2812b");
       
     }
     //run the ALUP main loop
