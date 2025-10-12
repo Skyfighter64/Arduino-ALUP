@@ -18,7 +18,7 @@
 #define ERROR_INVALID_COMMAND 4
 
 #define PROTOCOL_VERSION "0.2.2"
-#define FRAME_BUFFER_SIZE 5
+#define FRAME_BUFFER_SIZE 1
 
 #include "Connection.h"
 #include "Frame.h"
@@ -57,7 +57,7 @@ class Alup
         void ReplyToSender(Frame &frame, int result);
         void SendAcknowledgement(Frame &frame);
         void SendFrameError(Frame &frame, uint8_t error_code);
-void FlushConnection(int n);
+        void FlushConnection(int n);
         int32_t ReadInt32();
         int32_t ReadUInt32();
         
