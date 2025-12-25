@@ -40,6 +40,7 @@ public:
      */
     void Disconnect()
     {
+        Serial.flush();
         Serial.end();
     }
     /**

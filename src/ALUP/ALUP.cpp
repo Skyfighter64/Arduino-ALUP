@@ -58,6 +58,8 @@ void Alup::RequestAlupConnection()
         if(connection->Available() <= 0)
         {
             //no byte available; skip the read in
+            //wait for a short time to not overwhelm the sender
+            delay(10);
             continue;
         }
         //read in the byte and check it for an acknowledgement
@@ -84,7 +86,7 @@ int Alup::SendConfiguration(String deviceName, int dataPin, int clockPin, int le
     //build the configuration
     byte* buff;
     int length = BuildConfiguration(buff, PROTOCOL_VERSION, deviceName, ledCount, FRAME_BUFFER_SIZE, dataPin, clockPin, extraValues);
-   
+    Blink(LED_BUILTIN, 10, 100);
     //send the configuration
     connection->Send(buff, length);
     free(buff);
@@ -325,12 +327,12 @@ int Alup::ApplyFrame(Frame &frame)
         case Command::DISCONNECT: 
             //acknowledge the disconnect
             SendAcknowledgement(frame);
-            delay(100);
+            //delay(100);
             //disconnect from the remote device
             Disconnect();
             return -1;
         case Command::TOGGLE_INTERNAL_LED:
-            //test command for power LED
+            // test command for power LED
             // initialize pin2 as output first!
             digitalWrite(2, !digitalRead(2));
             return -1;
@@ -354,7 +356,6 @@ int Alup::ApplyFrame(Frame &frame)
     if (frame.offset >= ledCount)
     {
         // invalid offset
-        //not a multiple of 3
         delay(500);
         return ERROR_INVALID_OFFSET;
     }
