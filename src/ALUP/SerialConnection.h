@@ -57,25 +57,32 @@ public:
      * Note: blocks until the given amount of bytes was read
      * @param buffer: a pre-initialized buffer of the given size
      * @param size: the size of the buffer
-     * @return: the number of bytes read 
+     * @return: the number of bytes read; >= 0
      */
     int Read(uint8_t* buffer, size_t length) 
     {
-        // use a temporary buffer as the builtin serial buffer is 64B max
-        // which is to small for some applications 
-        uint8_t temp[1];
-        for(size_t i = 0; i < length; i ++)
-        {
-            while(Available() < 1)
-            {
-                //wait for data
-                yield();
-            } 
-            //read the next byte from the serial connection
-            Serial.readBytes(temp, 1);
-            buffer[i] = temp[0];
-        }
+        size_t remaining_bytes_to_read = length;
 
+        // Read in the data from the serial connection
+        // NOTE: we read data in chunks because the Hardware serial buffer
+        // can only store 64 Bytes but our data might be more than that
+        while(remaining_bytes_to_read > 0)
+        {
+            if(Available() <= 0)
+            {
+                // no data available to read
+                yield();
+                continue;
+            }
+            // read in a chunk of data, depending on the currently needed and available data
+            //NOTE: Chunk size always needs to be >=0 
+            size_t chunk_size = min(remaining_bytes_to_read, Available());
+
+            // read in the next chunk of data
+            Serial.readBytes(&buffer[length - remaining_bytes_to_read], chunk_size);
+            // NOTE: This should always end up at exactly 0 in the end
+            remaining_bytes_to_read -= chunk_size;
+        }
         return length;
     }
     /**
