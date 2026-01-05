@@ -76,7 +76,7 @@ public:
             }
             // read in a chunk of data, depending on the currently needed and available data
             //NOTE: Chunk size always needs to be >=0 
-            size_t chunk_size = min(remaining_bytes_to_read, Available());
+            size_t chunk_size = min((int) remaining_bytes_to_read, Available());
 
             // read in the next chunk of data
             Serial.readBytes(&buffer[length - remaining_bytes_to_read], chunk_size);
