@@ -1,7 +1,6 @@
 #include "ALUP.h"
 #include "Convert.h"
 #include "Timer.h"
-#include "MemoryFree.h"
 
 /**
  * default constructor
@@ -236,14 +235,11 @@ void Alup::Run()
     // read in the next incoming frame if the buffer has space left
     if (!this->frameBuffer.IsFull() && this->connection->Available() > 0)
     {
-        Serial.print("1");
         Frame* frame_ptr = ReadFrame();
         if (frame_ptr != nullptr)
         {
-            Serial.print("2");
             this->frameBuffer.Append(frame_ptr);
         }
-        Serial.print("3");
     }
 
     // check if there is a frame in the buffer
@@ -255,7 +251,6 @@ void Alup::Run()
 
     // get ptr for the the oldest buffered frame
     Frame* frame_ptr = this->frameBuffer.Peek();
-    Serial.print("A");
 
     // apply frame if the time stamp of the frame has been reached
     // or the timestamp is 0
@@ -264,19 +259,12 @@ void Alup::Run()
     // NOTE: We need to handle the 0-Case separately because of possible timesync inaccuracy + overflow
     if(frame_ptr->timestamp == 0 || (int32_t)(Timer::millis() - frame_ptr->timestamp) >= 0)
     {
-        Serial.print(F("Free RAM = "));
-        Serial.print(freeMemory());
-        Serial.print("B");
         //apply the frame to the leds
         int result = ApplyFrame(*frame_ptr);
-        Serial.print("C");
         ReplyToSender(*frame_ptr, result);
-        Serial.print("D");
         //remove frame from buffer and free the ressources
         this->frameBuffer.Pop();
-        Serial.print("E");
         delete frame_ptr;
-        Serial.print("F");
     }
 
 }
@@ -290,25 +278,16 @@ void Alup::Run()
 Frame* Alup::ReadFrame()
 {
     // create new frame object
-    Serial.print("+1");
     Frame* frame_ptr = new Frame();
     frame_ptr->id = ReadByte();
     frame_ptr->command = ReadByte();
     frame_ptr->body_size = ReadInt32();
     frame_ptr->offset = ReadInt32();
     frame_ptr->timestamp = ReadUInt32();
-    Serial.print("+2");
-
-    if(frame_ptr == nullptr)
-    {
-        Serial.print("x");
-    }
 
     frame_ptr->body = (byte*) malloc(sizeof(byte)* frame_ptr->body_size);
-    Serial.print("+3");
     if(frame_ptr->body == nullptr && frame_ptr->body_size > 0)
     {
-        Serial.print("X");
         //Not enough memory left for the incoming frame body
         // discard the incoming frame
         FlushConnection(frame_ptr->body_size);
@@ -320,14 +299,11 @@ Frame* Alup::ReadFrame()
         
         return nullptr;
     }
-    Serial.print("+4");
     //TODO: we get stuck here
     // maybe frame_ptr is a nullptr?
     connection->Read(frame_ptr->body, frame_ptr->body_size);
-    Serial.print("+5");
     //save the receiving timestamp
     frame_ptr->t_in = Timer::millis();
-    Serial.print("+6");
     return frame_ptr;
 }
 
@@ -476,7 +452,6 @@ int Alup::ApplyFrame(Frame &frame)
   */
  void Alup::SendFrameError(Frame &frame, uint8_t error_code)
  {
-    Serial.print("X");
     // convert the id to bytes
     byte idBytes[1];
     Convert::UInt8ToBytes(frame.id, idBytes);

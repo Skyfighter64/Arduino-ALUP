@@ -11,10 +11,11 @@
 #include "WiFi_Credentials.h"
 
 #define NUM_LEDS 100
-#define DATA_PIN 16
+#define DATA_PIN 2
 #define CLOCK_PIN 4
 
 CRGB leds[NUM_LEDS];
+
 
 
 Alup alup(leds, NUM_LEDS, DATA_PIN, CLOCK_PIN);
