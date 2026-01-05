@@ -18,13 +18,20 @@
 #define ERROR_INVALID_COMMAND 4
 
 #define PROTOCOL_VERSION "0.3"
-// TODO: BUFFER SIZE NEEDS TO BE MOVED INTO MAIN SOMEHOW 
-#define FRAME_BUFFER_SIZE 1
 
 #include "Connection.h"
 #include "Frame.h"
 #include "CyclicBuffer.h"
 #include <FastLED.h>
+
+/* 
+Set the maximum number of frames to buffer.
+Depends on the memory of the used microcontroller and NUM_LEDS.
+For Arduino Uno/Nano: ~1-2
+For ESP32/8266: ~5
+Decrease if OutOfMemoryErrors occur.
+*/
+constexpr size_t FRAME_BUFFER_SIZE = 1;
 
 class Alup
 {
@@ -43,7 +50,7 @@ class Alup
         int dataPin;
         int clockPin;
 
-        CyclicBuffer<Frame, FRAME_BUFFER_SIZE> frameBuffer;
+                CyclicBuffer<Frame, FRAME_BUFFER_SIZE> frameBuffer;
         
 
         uint8_t ReadByte();
