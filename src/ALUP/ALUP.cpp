@@ -86,7 +86,7 @@ int Alup::SendConfiguration(String deviceName, int dataPin, int clockPin, int le
     //build the configuration
     byte* buff;
     int length = BuildConfiguration(buff, PROTOCOL_VERSION, deviceName, ledCount, FRAME_BUFFER_SIZE, dataPin, clockPin, extraValues);
-    Blink(LED_BUILTIN, 10, 100);
+    Blink(LED_BUILTIN, 3, 100);
     //send the configuration
     connection->Send(buff, length);
     free(buff);
