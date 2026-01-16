@@ -11,7 +11,7 @@ TcpConnection::TcpConnection(char* _wifiSSID, char* _wifiPassword, int _port) : 
 {
     if(!Serial)
     {
-        Serial.begin(115200);
+        Serial.begin(250000);
     }
     pinMode(LED_BUILTIN, OUTPUT);
 }
@@ -114,23 +114,37 @@ void TcpConnection::Send(uint8_t* bytes, size_t length)
  */
 int TcpConnection::Read(uint8_t* buffer, size_t length)
 {
-    //check if nothing needs to be read
-    if(length == 0)
-    {
-        return 0;
-    }
+    size_t remaining_bytes_to_read = length;
 
     if(!WiFi.isConnected() || !isConnected())
     {
-        Serial.println("Could not receive data: Not connected!");
+        Serial.println("Could not receive data: WiFi or TCP not connected!");
         return 0;
     }
 
-    while(tcp.available() <= 0)
+    while(remaining_bytes_to_read > 0)
     {
-        //wait until data is available
+        if(tcp.available() <= 0)
+            {
+                // no data available to read
+                yield();
+                continue;
+            }
+            
+            // read in as much data as possible but not more than needed
+            size_t read_bytes = tcp.read(&buffer[length - remaining_bytes_to_read], remaining_bytes_to_read);
+            remaining_bytes_to_read -= read_bytes;
     }
-    return tcp.read(buffer, length);
+
+    // print out what was read for debugging
+    Serial.print("Received: ");
+    for(unsigned int i = 0; i < length; i ++)
+    {
+        Serial.print(buffer[i]);
+        Serial.print(" ");
+    }
+    
+    return length;
 }
 
 /**
