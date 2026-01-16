@@ -4,6 +4,8 @@
 #include "Connection.h"
 #include "Arduino.h"
 
+#include "ESPTelnet.h"
+
 #define SERIAL_TIMEOUT_MS 10000
 
 /**
@@ -51,6 +53,14 @@ public:
     void Send(uint8_t* bytes, size_t length)
     {
         Serial.write(bytes, length);
+        String log = "Sending: ";
+        for(size_t i=0; i < length; i++)
+        {
+            log += bytes[i];
+            log += " ";
+        }
+        //telnet.println(log);
+        DEBUG_MSG(log);
     }
     /**
      * function receiving the given amount of bytes
@@ -83,6 +93,14 @@ public:
             // NOTE: This should always end up at exactly 0 in the end
             remaining_bytes_to_read -= read_bytes;
         }
+        // print out what was read for debugging
+        String log = "Received: ";
+        for(size_t i=0; i < length; i++)
+        {
+            log += buffer[i];
+            log += " ";
+        }
+        DEBUG_MSG(log);
         return length;
     }
     /**

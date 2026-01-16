@@ -1,6 +1,14 @@
 #include <Arduino.h>
 #include <FastLED.h>
 
+// include the debug macros?
+#define DEBUG_ON 1
+#define DEBUG_USE_TELNET 1
+
+#include "ESPTelnet.h"
+
+
+ESPTelnet telnet;
 // choose the connection type
 //#include "ESP32/UdpConnection.h"
 //#include "ESP8266/TcpConnection.h"
@@ -11,10 +19,12 @@
 #include "WiFi_Credentials.h"
 
 #define NUM_LEDS 100
-#define DATA_PIN 2
+#define DATA_PIN 14
 #define CLOCK_PIN 4
 
 CRGB leds[NUM_LEDS];
+
+
 
 
 
@@ -25,18 +35,32 @@ SerialConnection connection = SerialConnection(115200);
 
 void setup()
 {
+    WiFi.mode(WIFI_STA);
+    WiFi.begin(SSID, PASSWORD);
+    
+   //wait until the connection is established 
+    while(WiFi.status() != WL_CONNECTED)
+    {
+        digitalWrite(LED_BUILTIN, HIGH);
+        delay(500);
+        digitalWrite(LED_BUILTIN, LOW);
+        delay(100);
+    }
     //initialize the LEDS
     FastLED.addLeds<WS2812B, DATA_PIN, GRB>(leds, NUM_LEDS);
     
+    telnet.begin(23);
 }
 void loop()
 {
+    telnet.loop();
     //try to connect if not connected
     if(!alup.connected)
     {
-      //try to connect/reconnect
-      delay(1000);
-      alup.Connect(&connection, "Arduino Nano", "LEDs: WS2812b");
+        telnet.println("Waiting for ALUP Connection");
+        //try to connect/reconnect
+        delay(1000);
+        alup.Connect(&connection, "D1 Mini", "LEDs: WS2812b");
       
     }
     //run the ALUP main loop
