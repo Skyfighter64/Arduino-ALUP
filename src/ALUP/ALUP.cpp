@@ -299,8 +299,6 @@ Frame* Alup::ReadFrame()
         
         return nullptr;
     }
-    //TODO: we get stuck here
-    // maybe frame_ptr is a nullptr?
     connection->Read(frame_ptr->body, frame_ptr->body_size);
     //save the receiving timestamp
     frame_ptr->t_in = Timer::millis();
@@ -311,7 +309,7 @@ Frame* Alup::ReadFrame()
 /**
  * function applying the given frame by executing its command
  * @param frame: the frame to apply
- * @return: -1 if applied successfully, ALUP Error code (0-255) if a frame error occured
+ * @return: -1 if applied successfully, ALUP Error code (0-255) if a frame error occurred
  */
 int Alup::ApplyFrame(Frame &frame)
 {
