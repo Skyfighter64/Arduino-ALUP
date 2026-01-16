@@ -79,9 +79,9 @@ public:
             size_t chunk_size = min((int) remaining_bytes_to_read, Available());
 
             // read in the next chunk of data
-            Serial.readBytes(&buffer[length - remaining_bytes_to_read], chunk_size);
+            size_t read_bytes = Serial.readBytes(&buffer[length - remaining_bytes_to_read], chunk_size);
             // NOTE: This should always end up at exactly 0 in the end
-            remaining_bytes_to_read -= chunk_size;
+            remaining_bytes_to_read -= read_bytes;
         }
         return length;
     }
