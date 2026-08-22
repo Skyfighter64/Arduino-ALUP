@@ -28,6 +28,14 @@ void TcpConnection::Connect()
     server.setNoDelay(true);
     server.begin();
 
+    //set up mDNS for device discovery
+    //TODO: use alup device name here? 
+    if(!MDNS.begin("d1mini"))
+    {
+        Serial.println("Failed to set up mDNS");
+    }
+    MDNS.addService("alup", "tcp", receivingPort);
+
     Serial.println("Waiting for TCP connection");
     // wait until someone connects to the tcp listener
     while(!tcp && !tcp.connected())
@@ -37,9 +45,13 @@ void TcpConnection::Connect()
         digitalWrite(LED_BUILTIN, LOW);
         delay(100);
 
+        // advertise mdns service
+        MDNS.update();
+
         tcp = server.accept();
         tcp.setNoDelay(true);
     }
+    MDNS.close();
     connected = true;
     Serial.println("TCP Connected");
 }   

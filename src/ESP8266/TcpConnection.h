@@ -3,6 +3,7 @@
 
 #include "ALUP/Connection.h"
 #include <ESP8266WiFi.h>
+#include <ESP8266mDNS.h>  
 
 
 class TcpConnection : public Connection
