@@ -176,11 +176,15 @@ This implementation has some values which have to be configured. The following t
         - Set the IP-Address of the Sender.
         - Set the TCP Port. Has to be the same value on the Sender. Default 5012
 
-#### Configuring ALUP (`main.cpp, loop()`):
-  - Set the values in `alup.Connect(connection, name, extra_values);` according to your liking:
-    - *connection*: No changes needed
-    - *Name:* The name of this device. Set to your liking, will be shown on the Sender.
-    - *extra values*: A string containing any text. Customize to your liking, has no specific use and can be used for anything.
+#### Configuring ALUP (`include/config.h, include/configs/`):
+  1. Create a new config file in `include/configs/` or use/copy an existing config file.
+  2. Set the configuration values according to your liking. Each value is explained in the default configuration file `include/configs/default.h`
+  3. Select your config file in `platformio.ini` by adding 
+  ```ini
+  build_flags = -D CONFIG_FILE=\"configs/d1mini_tcp.h\"
+  ```
+  to your build environment.
+  - NOTE: If no valid config file is specified, `include/configs/default.h` will be used as a default. 
 
 #### Time Drift Correction
 

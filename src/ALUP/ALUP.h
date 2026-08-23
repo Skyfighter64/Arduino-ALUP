@@ -24,14 +24,9 @@
 #include "CyclicBuffer.h"
 #include <FastLED.h>
 
-/* 
-Set the maximum number of frames to buffer.
-Depends on the memory of the used microcontroller and NUM_LEDS.
-For Arduino Uno/Nano: ~1-2
-For ESP32/8266: ~5
-Decrease if OutOfMemoryErrors occur.
-*/
-constexpr size_t FRAME_BUFFER_SIZE = 1;
+#include "config.h"
+
+
 
 class Alup
 {

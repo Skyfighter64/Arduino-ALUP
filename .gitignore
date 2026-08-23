@@ -1,6 +1,5 @@
 .pio
 .vscode/
-include/
 lib/
 test/
 .vscode/.browse.c_cpp.db*

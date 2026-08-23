@@ -1,33 +1,45 @@
 #include <Arduino.h>
 #include <FastLED.h>
 
-// choose the connection type
-//#include "ESP32/UdpConnection.h"
-//#include "ESP8266/TcpConnection.h"
-#include "ALUP/SerialConnection.h"
-
 #include "ALUP/ALUP.h"
+#include "config.h"
 
-#include "WiFi_Credentials.h"
+// import the platform dependent connection type
+#if defined(SERIAL_CONNECTION)
+    #include "ALUP/SerialConnection.h"
+#elif defined(TCP_ESP8266)
+    #include "ESP8266/TcpConnection.h"
+    #include "WiFi_Credentials.h"
+#elif defined(UDP_ESP32)
+    #include "ESP32/UdpConnection.h"
+    #include "WiFi_Credentials.h"
+#else
+    #error No valid connection selected
+#endif
 
-#define NUM_LEDS 100
-#define DATA_PIN 2
-#define CLOCK_PIN 4
 
 CRGB leds[NUM_LEDS];
-
-
-
 Alup alup(leds, NUM_LEDS, DATA_PIN, CLOCK_PIN);
-//UdpConnection connection = UdpConnection(SSID, PASSWORD, "192.168.178.35", 5012);
-//TcpConnection connection = TcpConnection(SSID, PASSWORD, 5012);
-SerialConnection connection = SerialConnection(115200);
+
+
+//select the connection type according to the config file
+#if defined(SERIAL_CONNECTION)
+auto connection = SerialConnection(BAUD_RATE);
+#elif defined(TCP_ESP8266)
+auto connection = TcpConnection(SSID, PASSWORD, PORT);
+#elif defined(ESP32)
+auto connection = UdpConnection(SSID, PASSWORD, IP_ADDRESS, PORT);
+#endif
+
 
 void setup()
 {
     //initialize the LEDS
-    FastLED.addLeds<WS2812B, DATA_PIN, GRB>(leds, NUM_LEDS);
-    
+    #if CLOCK_PIN < 0
+    FastLED.addLeds<LED_CHIPSET, DATA_PIN, COLOR_ORDER>(leds, NUM_LEDS);
+    #else
+    FastLED.addLeds<LED_CHIPSET, DATA_PIN, CLOCK_PIN, COLOR_ORDER>(leds, NUM_LEDS);
+    #endif
 }
 void loop()
 {
@@ -36,7 +48,7 @@ void loop()
     {
       //try to connect/reconnect
       delay(1000);
-      alup.Connect(&connection, "Arduino Nano", "LEDs: WS2812b");
+      alup.Connect(&connection, ALUP_NAME, ALUP_EXTRA_VALUES);
       
     }
     //run the ALUP main loop
